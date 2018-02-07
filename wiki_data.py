@@ -1,16 +1,7 @@
-
 # coding: utf-8
-
-# ## Aggregating Major Events by Year Using Wikipedia Data
-# - Uses the [Wikipedia](https://github.com/goldsmith/Wikipedia) python wrapper by Jonathan Goldsmith
-
-# In[1]:
-
-
-cd Wikipedia
-
-
-# In[2]:
+# @hyeness
+# Aggregating Major Events by Year Using Wikipedia Data
+# Uses the [Wikipedia](https://github.com/goldsmith/Wikipedia) python wrapper by Jonathan Goldsmith
 
 
 import wikipedia as wiki
@@ -18,15 +9,9 @@ import re
 import pandas
 
 
-# In[3]:
-
-
 MONTHS = ['January', 'February', 'March', 'April',
           'May', 'June', 'July', 'August',
           'September', 'October', 'November', 'December']
-
-
-# In[4]:
 
 
 def get_all_events(start, end):
@@ -87,20 +72,17 @@ def get_yearly_events(year):
     return event_list
 
 
-# In[5]:
+def create_events_df(start, end):
+    '''
+    Creates dataframe of all events for givent timeframe
+    Inputs: pair of (integers) - start year, end year
+    Returns:
+        pandas (dataframe) with columns 'Year', 'Month' and 'Event'
+    '''
+    
+    events_list = get_all_events(start, end)
+    events_df = pandas.DataFrame(events_list, columns=['Year', 'Month', 'Event'])
 
+    return events_df
 
-events_data = get_all_events(1958, 1963)
-
-
-# In[6]:
-
-
-events_df = pandas.DataFrame(events_data, columns=['Year', 'Month', 'Event'])
-
-
-# In[7]:
-
-
-events_df[:10]
 
