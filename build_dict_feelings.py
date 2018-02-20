@@ -2,7 +2,8 @@
 import nltk
 nltk.download()
 
-base_feelings = ['happy', 'sad', 'angry', 'scared']
+# Robert Plutchik's 8 primary emotions
+base_feelings = ['anger', 'anticipation', 'joy', 'disgust', 'sadness', 'suprise', 'fear', 'trust']
 
 synonyms = {}
 
@@ -13,3 +14,7 @@ for feeling in base_feelings:
             feelings_syn.append(lemma.name())
             if feeling not in synonyms:
                 synonyms[feeling] = feelings_syn
+
+# we're going to need to calculate jaro winkler scores
+# on these feelings since they're not going to match
+# exactly with what will be in lyrics, etc...
