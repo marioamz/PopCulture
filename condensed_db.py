@@ -11,7 +11,7 @@ import re
 import wikipedia as wp
 
 PATH_FILE_SONGS = "billboard_lyrics_1964-2015.csv"
-PATH_FILE_MOVIES = "/Users/crismacgregor/Desktop/UChi/Classes/CompSci/CS122/Project/PopCulture/the-movies-dataset/movies_metadata.csv"
+PATH_FILE_MOVIES = "movies_metadata.csv"
 PATH_FILE_BOOKS = "NYTimesBestSellers.xlsx"
 
 '''
@@ -120,7 +120,7 @@ def clean_songs(path_file):
 MOVIES
 '''
 
-def clean_movie(path_file):
+def clean_movies(path_file):
     '''
     Loads movies data in pandas dataframe
     Inputs: filename
@@ -182,7 +182,6 @@ def concatenate(dfs_ls):
     return result
 
 
-
-songs_df = clean_songs(PATH_FILE SONGS)
+songs_df = clean_songs(PATH_FILE_SONGS)
 movies_df = clean_movies(PATH_FILE_MOVIES)
 concatenate([songs_df, movies_df])
