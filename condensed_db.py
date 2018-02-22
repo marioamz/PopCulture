@@ -13,86 +13,54 @@ import wikipedia as wp
 PATH_FILE_SONGS = "billboard_lyrics_1964-2015.csv"
 PATH_FILE_MOVIES = "movies_metadata.csv"
 PATH_FILE_BOOKS = "NYTimesBestSellers.xlsx"
+PATH_FILE_PLOTS = "CM books/booksummaries.txt"
+
+songs_df = clean_songs(PATH_FILE_SONGS)
+movies_df = clean_movies(PATH_FILE_MOVIES)
+books_df = clean_books(PATH_FILE_BOOKS, PATH_FILE_PLOTS)
+concatenate([songs_df, movies_df, books_df])
 
 '''
 BOOKS
 '''
-books_df = pd.read_excel(PATH_FILE_BOOKS)
 
-def get_years():
-    '''
-    This function creates a list of years
-    that we're interested in.
-    '''
-    year_list = [1958]
-    for year in year_list:
-        year_list.append(year + 1)
-        if year == 2017:
-            return year_list
-
-def parsing():
-    '''
-    This function parses through our main Wikipedia page,
-    finds the relevant links to follow
-    '''
-    BestSellers = wp.page("Lists of The New York Times Fiction Best Sellers")
-
-    lists_links = BestSellers.links
-    pages = []
-
-    for link in lists_links:
-        for year in get_years():
-            if str(year) in lists_links:
-                pages.append(link)
-
-    return pages
-
-def get_books():
-    '''
-    This function compares titles of our books in the dataframe to titles
-    that have links in the pages of bestsellers
-    '''
-    # do contain search
-
-    books_to_parse = []
-    books = []
-    books_2 = []
-    parsed_pages = parsing()
-
-    for page in parsed_pages:
-        top = wp.page(page)
-        books_to_parse.append(top)
-
-    for pg in books_to_parse:
-        for book in pg:
-            book = pg.links
-            books.append(book)
-
-    for book in books:
-        for b in book:
-            if b in books_df["Title"]:
-                books_2.append(b)
-
-    return books_2
-
-def get_plots():
+def clean_books(path_file_b, path_file_p):
     '''
     This function gets the plots from the books.
     '''
+    bsbooks_df = pd.read_excel(path_file_b)
+    cmbooks_df = pd.read_csv(path_file_p, sep='\t', header = None, index_col= None,
+                           names = ["Wikipedia article ID", "Freebase ID", "Book title",
+                                  "Author", "Publication date", "Book genres", "Plot"],
+                           error_bad_lines= False)
 
-    plots = []
+    cmbooks_df.rename(columns = {"Book title": "Title"}, inplace = True)
+    cmbooks_df.rename(columns = {"Publication date": "Year"}, inplace = True)
 
-    for book in get_books():
-        book_page = wp.page(book)
-        if "novel" in book_page.summary:
-            plot = book_page.section("Plot")
-            plots.append(plot)
-        else:
-            book_page = wp.page(book + "(Novel)")
-            plot = book_page.section("Plot")
-            plots.append(plot)
+    exact_matches(bsbooks_df, cmbooks_df)
 
-    return plots
+def clean_books_build(df1, df2):
+    '''
+    Matching directly on title: 322 matches
+    '''
+    # this builds a list of all the titles of bestsellers
+    title_list = []
+    for title in df1.Title:
+        title_list.append(title)
+
+    # this creates a matching dataframe
+    temp_df = pd.DataFrame(df2['Title'].isin(title_list))
+    matching = temp_df[temp_df.Title != False]
+
+    # filters cm books to just the matches, deduplicates, drops irrelevant cols
+    cmbooks = df2.loc[list(matching.index)].drop_duplicates(subset = "Title")
+    cmbooks.drop(["Author", "Year", "Book genres", "Wikipedia article ID", "Freebase ID", axis = 1, inplace=True])
+
+    # final dataframe
+    books = pd.merge(df1, cmbooks, on = "Title")
+
+    return books
+
 
 '''
 SONGS
@@ -180,8 +148,3 @@ def concatenate(dfs_ls):
     result = pd.concat(dfs_ls)
 
     return result
-
-
-songs_df = clean_songs(PATH_FILE_SONGS)
-movies_df = clean_movies(PATH_FILE_MOVIES)
-concatenate([songs_df, movies_df])
