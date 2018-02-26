@@ -4,6 +4,7 @@ from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd
 
 
@@ -42,10 +43,12 @@ def process_frame(base_feelings, p_df):
 
         yearly_df = p_df[(p_df.Year== i)]
         d_feels = {}
+        d_sents = {}
         for row in yearly_df.iterrows():
             process_text(row[1].Plot, feels, d_feels)
-        print(i, d_feels)
-        d_year_feels[i] = d_feels
+            #sentiments(row[1].Plot, d_sents)
+        #print(i, d_feels)
+        d_year_feels[i] = d_feels, d_sents
 
     return d_year_feels
 
@@ -80,6 +83,22 @@ def process_text(target_text, feels, d_updt):
     else:
         return "as"
 
+# FUNCTIONS TO MEASURE SENTIMENT INTENSITY
+
+def sentiments(text, d_sts):
+    
+    sid = SentimentIntensityAnalyzer()
+    
+    if type(text) is str:
+        sentiment = sid.polarity_scores(text)
+    
+    for sent, score in sentiment.items():
+        if sent not in d_sts:
+            d_sts[sent] = score
+        else:
+            d_sts[sent] += score
+    
+    return d_sts
 
 #FUNCTIONS TO CLEAN BASE FEELINGS
 def synonyms(wrds):
