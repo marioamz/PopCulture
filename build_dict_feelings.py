@@ -42,13 +42,13 @@ def process_frame(base_feelings, p_df):
     for i in list_years:
 
         yearly_df = p_df[(p_df.Year== i)]
+        d_sents = sentiments(yearly_df)
         d_feels = {}
-        d_sents = {}
+        #d_sents = {}
         for row in yearly_df.iterrows():
             process_text(row[1].Plot, feels, d_feels)
-            #sentiments(row[1].Plot, d_sents)
-        #print(i, d_feels)
-        d_year_feels[i] = d_feels, d_sents
+            #sentiments(row[1].Plot, yearly_df)
+        d_year_feels[i] = (d_feels, d_sents)
 
     return d_year_feels
 
@@ -85,25 +85,38 @@ def process_text(target_text, feels, d_updt):
 
 # FUNCTIONS TO MEASURE SENTIMENT INTENSITY
 
-def sentiments(text, d_sts):
+def sentiments(yearly_df):
+    '''
+    This function takes in a dataframe segregated by year. It
+    pulls out the plot for each year, calculates it's sentiment
+    using SentimentIntensityAnalyzer, aggregates sentiments for
+    all plots in the year in question, and then takes the average
+    of those figures.
+    '''
     
+    sent_dict = {}
+    sentiment = {}
     sid = SentimentIntensityAnalyzer()
     
-    if type(text) is str:
-        sentiment = sid.polarity_scores(text)
+    for row in yearly_df.iterrows():
+        if type(row[1].Plot) is str:
+            sentiment = sid.polarity_scores(row[1].Plot)
     
-    for sent, score in sentiment.items():
-        if sent not in d_sts:
-            d_sts[sent] = score
-        else:
-            d_sts[sent] += score
+        for sent, score in sentiment.items():
+            if sent not in sent_dict:
+                sent_dict[sent] = score
+            else:
+                sent_dict[sent] += score
+                
+    for s, sc in sent_dict.items():
+        sent_dict[s] = sc / len(yearly_df)
     
-    return d_sts
+    return sent_dict
 
 #FUNCTIONS TO CLEAN BASE FEELINGS
 def synonyms(wrds):
     '''
-    Returns a list of all synonims
+    Returns a list of all synonyms
     '''
     synonyms = {}
     for feeling in wrds:
@@ -119,7 +132,7 @@ def synonyms(wrds):
 
 def add_stem_words(d_words):
     '''
-    Generates a list with stem-words for the words in the synonim list for each
+    Generates a list with stem-words for the words in the synonym list for each
     feeling
     '''
     stems_f = {}
