@@ -2,40 +2,38 @@
 import nltk
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
-from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd
 
 
 # Robert Plutchik's 8 primary emotions and extensions
-base_feelings = ['anger', 'anticipation', 'joy', 'disgust', 'sadness',
-                'suprise', 'fear', 'trust', 'rage', 'loathing', 'grief',
-                'amazement', 'terror', 'admiration', 'ecstasy', 'vigilance',
-                'serenity', 'interest' 'annoyance', 'boredom', 'pensiveness',
-                'distraction', 'apprehension' 'acceptance', 'optimism',
-                'love', 'submission', 'awe', 'disapproval', 'remorse']
+#base_feelings = ['anger', 'anticipation', 'joy', 'disgust', 'sadness',
+#               'suprise', 'fear', 'trust', 'rage', 'loathing', 'grief',
+#                'amazement', 'terror', 'admiration', 'ecstasy', 'vigilance',
+#                'serenity', 'interest' 'annoyance', 'boredom', 'pensiveness',
+#                'distraction', 'apprehension' 'acceptance', 'optimism',
+#                'love', 'submission', 'awe', 'disapproval', 'remorse']
+
+primary_emotions = {"anticipation":["vigilance", "interest", "optimism", "aggressiveness", "anticipation"],
+                    "anger":["rage", "annoyance", "aggressiveness", "contempt", "anger"],
+                    "joy":["ecstasy", "serenity", "optimism", "love", "joy"],
+                    "trust":["admiration", "acceptance", "love", "submission", "trust"],
+                    "fear":["terror", "apprehension", "submission", "awe", "fear"],
+                    "surprise":["amazement", "distraction", "awe", "disapproval", "surprise"],
+                    "sadness":["pensiveness", "grief", "remorse", "disapproval", "sadness"],
+                    "disgust":["loathing", "boredom", "contempt", "remorse", "disgust"]}
 
 
-# sample lyric
-lyric = "the beau brummels miscellaneous just a little just a little beau brummels ahhhhhhhhhhhhhhhhhhhhhhhh i cant stay yes i know you know i hate to go but goodbye love was sweet i was kind never mean so ill cry just a little cause i love you so and ill die just a little cause i have to go away cant you see how i feel when i say loves unreal so goodbye its been sweet even though incomplete so ill cry just a little cause i love you so and ill die just a little cause i have to go away instrumental interlude every night i still hear oh your sighs very near now its gone gone away as i once heard you say now ill cry just a little cause i love you so and ill die just a little cause i have to go away ahhhhhhhhhhhhhhhhhhhhhhhhh tmazanec1junocom or joy tom mazanec to humans"
-
-
-'''
-METHODOLOGY TO DECIDE:
-    1. should we make a mega string per year and tokenize and clean that one
-    2. OR get main feelings by song and decide check total frequencies
-
-'''
-
-def process_frame(base_feelings, p_df):
+def process_frame(primary_emotions, p_df):
     '''
     Takes a dataframe. Using all observations corresponding to a given year,
     it will update a dictionary counting how many times words related to a
     given feeling show up.
 
     '''
-    feels = synonyms(base_feelings)
+    feels = synonyms(primary_emotions)
     d_year_feels = {}
     list_years = list(p_df.Year.unique())
 
@@ -44,10 +42,8 @@ def process_frame(base_feelings, p_df):
         yearly_df = p_df[(p_df.Year== i)]
         d_sents = sentiments(yearly_df)
         d_feels = {}
-        #d_sents = {}
         for row in yearly_df.iterrows():
             process_text(row[1].Plot, feels, d_feels)
-            #sentiments(row[1].Plot, yearly_df)
         d_year_feels[i] = (d_feels, d_sents)
 
     return d_year_feels
@@ -113,20 +109,22 @@ def sentiments(yearly_df):
     
     return sent_dict
 
+
 #FUNCTIONS TO CLEAN BASE FEELINGS
 def synonyms(wrds):
     '''
     Returns a list of all synonyms
     '''
     synonyms = {}
-    for feeling in wrds:
+    for primary, feeling in wrds.items():
         feelings_syn = []
-        for syn in wordnet.synsets(feeling):
-            for lemma in syn.lemmas():
-                if feeling not in synonyms:
-                    synonyms[feeling] = feelings_syn
-                if lemma.name() not in feelings_syn:
-                    feelings_syn.append(lemma.name())
+        for f in feeling:
+            for syn in wordnet.synsets(f):
+                for lemma in syn.lemmas():
+                    if f not in synonyms:
+                        synonyms[primary] = feelings_syn
+                        if lemma.name() not in feelings_syn:
+                            feelings_syn.append(lemma.name())
 
     return synonyms
 
@@ -136,11 +134,11 @@ def add_stem_words(d_words):
     feeling
     '''
     stems_f = {}
-    stemmer = PorterStemmer()
+    lemmatizer = WordNetLemmatizer()
     for w, syn in d_words.items():
         for i in syn:
-            if stemmer.stem(i) not in syn:
-                stems_f[i] = stemmer.stem(i)
+            if lemmatizer.lemmatize(i) not in syn:
+                stems_f[i] = lemmatizer.lemmatize(i)
     return stems_f
 
 # FUNCTIONS TO CLEAN PLOT
