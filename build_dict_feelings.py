@@ -137,8 +137,12 @@ def add_stem_words(d_words):
     lemmatizer = WordNetLemmatizer()
     for w, syn in d_words.items():
         for i in syn:
+            # still unsure if this is the right loop
             if lemmatizer.lemmatize(i) not in syn:
+                # this isn't working because you need to a positional 
+                # value to lemmatize (word, 'v')
                 stems_f[i] = lemmatizer.lemmatize(i)
+                # do we incorporate this into the broader dictionary here or later?
     return stems_f
 
 # FUNCTIONS TO CLEAN PLOT
