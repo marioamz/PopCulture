@@ -30,7 +30,7 @@ def process_frame(primary_emotions, p_df):
     '''
     Takes a dataframe. Using all observations corresponding to a given year,
     it will update a dictionary counting how many times words related to a
-    given feeling show up.
+    given feeling show up..
 
     '''
     feels = synonyms(primary_emotions)
