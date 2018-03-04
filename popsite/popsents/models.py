@@ -7,7 +7,7 @@ import pandas as pd
 #import wiki_data as wk
 
 EVENTS_FILENAME = '../all_events.csv'
-MEDIA_FILENAME = '../temporary.csv'
+MEDIA_FILENAME = '../../temporary.csv'
 
 class Event(models.Model):
     '''
@@ -37,33 +37,18 @@ class Media(models.Model):
         return media_string
 
 
-class Year(models.Model):
-    '''
-    each year has a table with events
-    each year is also related to sentiments and songs/movies/books
-    '''
-    pass
-
 class Sentiment(models.Model):
     # many to many year field
     pass
 
-
+########################
+#  DATA DUMP INTO SQL  #
+########################
 
 def construct_db():
-    edf = wk.create_events_df(1945, 2018)
-    years = edf['Year'].unique()
 
-    # create year db
-    for y in years:
-        yrow = Year(year=y)
-        yrow.save()
-
-    for idx, row in edf.iterrows():
-        event = Event(year=row.year, month=row.month, text=row.event)
-        event.save()
-
-
+    create_event_table(EVENTS_FILENAME)
+    create_media_table(MEDIA_FILENAME)
 
 def create_event_table(filename):
     df = pd.read_csv(filename, header=0,
@@ -75,9 +60,9 @@ def create_event_table(filename):
         event.save()
 
 def create_media_table(filename):
-    df = pd.read_csv(filename, header=0,
-                    names=['idx', 'year', 'type', 'plot', 'title'],
-                    index_col='idx')
-    for idx, row in df.iterrows():
-        media = Media(year=row.year, type=row.type, detailed_text=row.plot, title=row.title)
-        media.save()
+    with open(filename) as media_db:
+        reader = csv.reader(media_db)
+        for row in (r for i, r in enumerate(reader) if i>0):
+            media = Media(year=row[1], media_type=row[2],
+                          detailed_text=row[3], title=row[4])
+            media.save()

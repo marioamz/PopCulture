@@ -7,10 +7,12 @@ from django.views import generic
 from .models import Event, Media
 from .forms import YearForm
 
-# I want to create a form to select a year and
-# have it return a queryset from the database using that year
 
 def select_year(request):
+    '''
+    Basic view where user selects year
+    Returns a result from the database
+    '''
     if request.method == "POST":
         print(request)
         form = YearForm(request.POST)
@@ -22,6 +24,9 @@ def select_year(request):
 
 
 def years_list(request):
+    '''
+    Index of all years covered in project
+    '''
     template_name = 'popsents/year_list.html'
     q = set([event.year for event in Event.objects.all()])
     context = {'years': q}
@@ -29,7 +34,8 @@ def years_list(request):
 
 
 def year_detail(request, event_year):
-
+    '''
+    '''
     events_set = Event.objects.filter(year=event_year) # queryset
     template_name = 'popsents/year_detail.html'
     context = {'event_year': event_year,
@@ -39,13 +45,15 @@ def year_detail(request, event_year):
 # Very basic index view
 
 class IndexView(generic.ListView):
+    '''
+    '''
+
     template_name = 'popsents/index.html'
     context_object_name = 'random_events'
 
     def get_queryset(self):
         return Event.objects.order_by('id')[:100]
         #return self.get_events_by_year()
-
 
 def detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
