@@ -42,12 +42,12 @@ def year_detail(request, event_year):
                'yearly_events': events_set}
     return render(request, template_name, context)
 
+
 # Very basic index view
 
 class IndexView(generic.ListView):
     '''
     '''
-
     template_name = 'popsents/index.html'
     context_object_name = 'random_events'
 

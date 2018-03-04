@@ -70,8 +70,8 @@ def create_media_table(filename):
     with open(filename) as media_db:
         reader = csv.reader(media_db)
         for row in (r for i, r in enumerate(reader) if i>0):
-            media = Media(year=row[5], media_type=row[4],
-                          detailed_text=row[2], title=row[3],
-                          author=row[1])
+            media = Media(year=row[1], media_type=row[2],
+                          detailed_text=row[3], title=row[4],
+                          author=row[5])
 
             media.save()
