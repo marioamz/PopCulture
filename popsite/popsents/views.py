@@ -28,8 +28,8 @@ def years_list(request):
     Index of all years covered in project
     '''
     template_name = 'popsents/year_list.html'
-    q = set([event.year for event in Event.objects.all()])
-    context = {'years': q}
+    years = (i for i in range(1945, 2019))
+    context = {'years': years}
     return render(request, template_name, context)
 
 

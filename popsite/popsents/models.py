@@ -4,10 +4,10 @@ from django.utils import timezone
 import datetime
 import csv
 import pandas as pd
-#import wiki_data as wk
+
 
 EVENTS_FILENAME = '../all_events.csv'
-MEDIA_FILENAME = '../../temporary.csv'
+MEDIA_FILENAME = '../../final_media_df.csv'
 
 class Event(models.Model):
     '''
@@ -15,7 +15,7 @@ class Event(models.Model):
     '''
     year = models.CharField(max_length=4)
     month = models.CharField(max_length=30)
-    text = models.TextField()
+    text = models.TextField(default='')
 
     def __str__(self):
         event_string = "{} {}: {}".format(self.month, self.year, self.text[:100])
@@ -29,8 +29,9 @@ class Media(models.Model):
     media_type = models.CharField(max_length=5, choices=(('book', "Book"),
                                                          ('movie', "Movie"),
                                                          ('song', "Song"),))
-    detailed_text = models.TextField()
-    title = models.TextField()
+    detailed_text = models.TextField(default='')
+    title = models.TextField(default='')
+    author = models.TextField(default='')
 
     def __str__(self):
         media_string = "{} ({}) - {}".format(self.title, self.year, self.media_type)
@@ -38,7 +39,7 @@ class Media(models.Model):
 
 
 class Sentiment(models.Model):
-    # many to many year field
+    #
     pass
 
 ########################
@@ -46,9 +47,14 @@ class Sentiment(models.Model):
 ########################
 
 def construct_db():
+    '''
+    '''
+    Media.objects.all().delete()
+    Event.objects.all().delete()
 
     create_event_table(EVENTS_FILENAME)
     create_media_table(MEDIA_FILENAME)
+
 
 def create_event_table(filename):
     df = pd.read_csv(filename, header=0,
@@ -59,10 +65,13 @@ def create_event_table(filename):
         event = Event(year=row.year, month=row.month, text=row.event)
         event.save()
 
+
 def create_media_table(filename):
     with open(filename) as media_db:
         reader = csv.reader(media_db)
         for row in (r for i, r in enumerate(reader) if i>0):
-            media = Media(year=row[1], media_type=row[2],
-                          detailed_text=row[3], title=row[4])
+            media = Media(year=row[5], media_type=row[4],
+                          detailed_text=row[2], title=row[3],
+                          author=row[1])
+
             media.save()
