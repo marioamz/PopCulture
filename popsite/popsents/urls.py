@@ -7,8 +7,8 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('<int:event_id>/', views.detail, name='detail'),
     path('years/', views.select_year, name='years'),
+    path('year_list/<int:event_year>', views.year_detail, name='year_detail'),
     path('year_list/', views.years_list, name='year_list'),
-    path('<int:event_year>/', views.year_detail, name='year_detail')
 ]
 '''
 path function is passed 4 arguments
