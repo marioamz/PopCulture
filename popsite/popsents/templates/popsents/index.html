@@ -1,0 +1,13 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'popsents/style.css' %}" />
+
+{% if random_events %}
+    <ul>
+    {% for event in random_events %}
+        <li><a href="{% url 'popsents:detail' event.id%}">{{ event.year }} {{event.month}}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No events are available.</p>
+{% endif %}

@@ -1,0 +1,11 @@
+{% load static %}
+
+{% if years %}
+    <ul>
+    {% for year in years %}
+        <li><a href="{% url 'popsents:year_detail' year%}">{{ year }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No events are available.</p>
+{% endif %}

@@ -4,16 +4,17 @@ from django.utils import timezone
 import datetime
 import csv
 import pandas as pd
+#import wiki_data as wk
 
-EVENTS_FILENAME = '../../events.csv'
-MEDIA_FILENAME = '../../temporary.csv'
+EVENTS_FILENAME = '../all_events.csv'
+MEDIA_FILENAME = '../temporary.csv'
 
 class Event(models.Model):
     '''
     represents event table in sql db
     '''
-    year = models.IntegerField(max_length=4)
-    month = models.CharField(max_length=12)
+    year = models.CharField(max_length=4)
+    month = models.CharField(max_length=30)
     text = models.TextField()
 
     def __str__(self):
@@ -24,29 +25,44 @@ class Media(models.Model):
     '''
     represents media table in sql db
     '''
-    year = models.IntegerField()
-    MTYPE = (
-        ('Book', 'Book'),
-        ('Song', 'Song'),
-        ('Movie', 'Movie'),
-    )
-    media_type = models.CharField(max_length=5, choices=MTYPE)
+    year = models.CharField(max_length=4)
+    media_type = models.CharField(max_length=5, choices=(('book', "Book"),
+                                                         ('movie', "Movie"),
+                                                         ('song', "Song"),))
     detailed_text = models.TextField()
     title = models.TextField()
 
     def __str__(self):
         media_string = "{} ({}) - {}".format(self.title, self.year, self.media_type)
         return media_string
-'''
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.choice_text
 
-'''
+class Year(models.Model):
+    '''
+    each year has a table with events
+    each year is also related to sentiments and songs/movies/books
+    '''
+    pass
+
+class Sentiment(models.Model):
+    # many to many year field
+    pass
+
+
+
+def construct_db():
+    edf = wk.create_events_df(1945, 2018)
+    years = edf['Year'].unique()
+
+    # create year db
+    for y in years:
+        yrow = Year(year=y)
+        yrow.save()
+
+    for idx, row in edf.iterrows():
+        event = Event(year=row.year, month=row.month, text=row.event)
+        event.save()
+
 
 
 def create_event_table(filename):
@@ -55,7 +71,7 @@ def create_event_table(filename):
                     index_col='idx')
 
     for idx, row in df.iterrows():
-        event = Event(row.year, row.month, row.event)
+        event = Event(year=row.year, month=row.month, text=row.event)
         event.save()
 
 def create_media_table(filename):
@@ -63,5 +79,5 @@ def create_media_table(filename):
                     names=['idx', 'year', 'type', 'plot', 'title'],
                     index_col='idx')
     for idx, row in df.iterrows():
-        media = Media(row.year, row.type, row.plot, row.title)
+        media = Media(year=row.year, type=row.type, detailed_text=row.plot, title=row.title)
         media.save()

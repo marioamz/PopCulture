@@ -27,6 +27,7 @@ def get_all_events(start, end):
 
     all_events = []
     for i in range(start, end + 1):
+        print(i)
         year = str(i)
         all_events += get_year_month_events(year)
     return all_events
@@ -78,7 +79,7 @@ def get_yearly_events(year):
     return event_list
 
 
-def create_events_df(filename, start, end):
+def create_events_df(start, end):
     '''
     Creates dataframe of all events for givent timeframe
     Inputs: pair of (integers) - start year, end year
@@ -89,6 +90,6 @@ def create_events_df(filename, start, end):
     events_list = get_all_events(start, end)
     events_df = pd.DataFrame(events_list, columns=['Year', 'Month', 'Event'])
 
-    events_df.to_csv(filename)
+    #events_df.to_csv(filename)
 
     return events_df
