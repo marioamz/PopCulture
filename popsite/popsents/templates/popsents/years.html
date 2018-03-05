@@ -1,0 +1,28 @@
+<html lang="en">
+<head>
+  <meta charset="utf8">
+  <title>Pop Culture Renegades</title>
+  <meta name="description" content="Analyzing pop culture sentiment over that past decades">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'popsents/style.css' %}" />
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <section>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Let's go!">
+        </form>
+    </section>
+    <div class="push"></div>
+  </div>
+
+</body>

@@ -5,16 +5,17 @@ import datetime
 import csv
 import pandas as pd
 
-EVENTS_FILENAME = '../../events.csv'
-MEDIA_FILENAME = '../../temporary.csv'
+
+EVENTS_FILENAME = '../all_events.csv'
+MEDIA_FILENAME = '../../final_media_df.csv'
 
 class Event(models.Model):
     '''
     represents event table in sql db
     '''
-    year = models.IntegerField(max_length=4)
-    month = models.CharField(max_length=12)
-    text = models.TextField()
+    year = models.CharField(max_length=4)
+    month = models.CharField(max_length=30)
+    text = models.TextField(default='')
 
     def __str__(self):
         event_string = "{} {}: {}".format(self.month, self.year, self.text[:100])
@@ -24,29 +25,35 @@ class Media(models.Model):
     '''
     represents media table in sql db
     '''
-    year = models.IntegerField()
-    MTYPE = (
-        ('Book', 'Book'),
-        ('Song', 'Song'),
-        ('Movie', 'Movie'),
-    )
-    media_type = models.CharField(max_length=5, choices=MTYPE)
-    detailed_text = models.TextField()
-    title = models.TextField()
+    year = models.CharField(max_length=4)
+    media_type = models.CharField(max_length=5, choices=(('book', "Book"),
+                                                         ('movie', "Movie"),
+                                                         ('song', "Song"),))
+    detailed_text = models.TextField(default='')
+    title = models.TextField(default='')
+    author = models.TextField(default='')
 
     def __str__(self):
         media_string = "{} ({}) - {}".format(self.title, self.year, self.media_type)
         return media_string
-'''
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.choice_text
 
-'''
+class Sentiment(models.Model):
+    #
+    pass
+
+########################
+#  DATA DUMP INTO SQL  #
+########################
+
+def construct_db():
+    '''
+    '''
+    Media.objects.all().delete()
+    Event.objects.all().delete()
+
+    create_event_table(EVENTS_FILENAME)
+    create_media_table(MEDIA_FILENAME)
 
 
 def create_event_table(filename):
@@ -55,13 +62,16 @@ def create_event_table(filename):
                     index_col='idx')
 
     for idx, row in df.iterrows():
-        event = Event(row.year, row.month, row.event)
+        event = Event(year=row.year, month=row.month, text=row.event)
         event.save()
 
+
 def create_media_table(filename):
-    df = pd.read_csv(filename, header=0,
-                    names=['idx', 'year', 'type', 'plot', 'title'],
-                    index_col='idx')
-    for idx, row in df.iterrows():
-        media = Media(row.year, row.type, row.plot, row.title)
-        media.save()
+    with open(filename) as media_db:
+        reader = csv.reader(media_db)
+        for row in (r for i, r in enumerate(reader) if i>0):
+            media = Media(year=row[1], media_type=row[2],
+                          detailed_text=row[3], title=row[4],
+                          author=row[5])
+
+            media.save()

@@ -1,0 +1,12 @@
+
+<h1> {{event_year}} </h1>
+
+{% if yearly_events %}
+    <ul>
+    {% for event in yearly_events %}
+        <li> {{event.month}} {{ event.text}} </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No events are available.</p>
+{% endif %}
