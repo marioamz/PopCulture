@@ -5,16 +5,9 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import csv
 import pandas as pd
 
-
-# Robert Plutchik's 8 primary emotions and extensions
-#base_feelings = ['anger', 'anticipation', 'joy', 'disgust', 'sadness',
-#               'suprise', 'fear', 'trust', 'rage', 'loathing', 'grief',
-#                'amazement', 'terror', 'admiration', 'ecstasy', 'vigilance',
-#                'serenity', 'interest' 'annoyance', 'boredom', 'pensiveness',
-#                'distraction', 'apprehension' 'acceptance', 'optimism',
-#                'love', 'submission', 'awe', 'disapproval', 'remorse']
 
 primary_emotions = {"anticipation":["vigilance", "interest", "optimism", "aggressiveness", "anticipation"],
                     "anger":["rage", "annoyance", "aggressiveness", "contempt", "anger"],
@@ -26,6 +19,42 @@ primary_emotions = {"anticipation":["vigilance", "interest", "optimism", "aggres
                     "disgust":["loathing", "boredom", "contempt", "remorse", "disgust"]}
 
 
+def create_csv(primary_emotions, p_df):
+    '''
+    Creates a CSV file that can be then linked to Django.
+    '''
+    
+    data = process_frame(primary_emotions, p_df)
+    
+    csvfile = open("test.csv", 'w')
+    filewriter = csv.writer(csvfile, delimiter=",", quotechar=",")
+        
+    for year, sentiments in data.items():
+        list_for_csv =[]
+        emotions, sent = sentiments
+        top_e = sorted(emotions.items(), key = lambda x:-x[1])[:3]
+        total = 0
+        list_for_csv.append(year)
+        
+        for e, cnt in emotions.items():
+            total += cnt
+            
+        for tup in top_e:
+            emot, freq  = tup
+            freq /= total
+            freq *= 100
+            list_for_csv.append((emot, freq))
+                
+            #move top 3 into columns
+        for measure, percent in sent.items():
+            list_for_csv.append(percent)
+                    
+        filewriter.writerow((list_for_csv[0], list_for_csv[1],
+                             list_for_csv[2], list_for_csv[3],
+                            list_for_csv[4], list_for_csv[5],
+                             list_for_csv[6], list_for_csv[7]))
+            
+            
 def process_frame(primary_emotions, p_df):
     '''
     Takes a dataframe. Using all observations corresponding to a given year,
@@ -61,7 +90,7 @@ def process_frame(primary_emotions, p_df):
 #         pred_feels[year] = predominant
 #
 #     return d_year_feels, pred_feels
-
+    
 
 def process_text(target_text, feels, d_updt):
     '''
@@ -96,7 +125,12 @@ def sentiments(yearly_df):
     
     for row in yearly_df.iterrows():
         if type(row[1].Plot) is str:
-            sentiment = sid.polarity_scores(row[1].Plot)
+            ####
+            tokenized = tokenize(row[1].Plot)
+            no_stops = rm_stopwords(tokenized)
+            plots = ' '.join(no_stops)
+            
+            sentiment = sid.polarity_scores(plots)
     
         for sent, score in sentiment.items():
             if sent not in sent_dict:
