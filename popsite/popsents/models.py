@@ -9,6 +9,7 @@ import pandas as pd
 EVENTS_FILENAME = '../all_events.csv'
 MEDIA_FILENAME = '../../final_media_df.csv'
 
+
 class Event(models.Model):
     '''
     represents event table in sql db
@@ -70,7 +71,7 @@ def create_media_table(filename):
     with open(filename) as media_db:
         reader = csv.reader(media_db)
         for row in (r for i, r in enumerate(reader) if i>0):
-            media = Media(year=row[1], media_type=row[2],
+            media = Media(year=int(row[1][:4]), media_type=row[2],
                           detailed_text=row[3], title=row[4],
                           author=row[5])
 

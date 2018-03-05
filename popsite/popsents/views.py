@@ -23,6 +23,25 @@ def select_year(request):
     return render(request, 'popsents/years.html', {'form': form})
 
 
+def select_year_and_type(request):
+    '''
+    Basic view where user selects year
+    Returns a result from the database
+    '''
+    if request.method == "POST":
+        print(request)
+        form = YearForm(request.POST)
+        year = form.data['year']
+        mt = form.data['media_type']
+        print(year, mt)
+        #print(form.data)
+        return year_media_detail(request, year, mt)
+    else:
+        form = YearForm()
+
+    return render(request, 'popsents/years.html', {'form': form})
+
+
 def years_list(request):
     '''
     Index of all years covered in project
@@ -42,6 +61,17 @@ def year_detail(request, event_year):
                'yearly_events': events_set}
     return render(request, template_name, context)
 
+def year_media_detail(request, input_year, input_type):
+    '''
+    '''
+    media_set = Media.objects.filter(year=input_year, media_type=input_type) # queryset
+    print(media_set)
+    template_name = 'popsents/year_media.html'
+    context = {'input_year': input_year,
+               'media_type': input_type,
+               'media_set': media_set}
+    return render(request, template_name, context)
+
 
 # Very basic index view
 
@@ -58,3 +88,8 @@ class IndexView(generic.ListView):
 def detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     return render(request, 'popsents/detail.html', {'event': event})
+
+
+def home_page(request):
+    template = 'popsents/home.html'
+    return render(request, template)

@@ -4,9 +4,9 @@ from . import views
 
 app_name = 'popsents'
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
+    path('', views.home_page, name='home'),
     path('<int:event_id>/', views.detail, name='detail'),
-    path('years/', views.select_year, name='years'),
+    path('years/', views.select_year_and_type, name='years'),
     path('year_list/<int:event_year>', views.year_detail, name='year_detail'),
     path('year_list/', views.years_list, name='year_list'),
 ]

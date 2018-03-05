@@ -1,0 +1,12 @@
+
+<h1> You are looking at {{ media_type }}s from {{input_year}} </h1>
+
+{% if media_set %}
+    <ul>
+    {% for m in media_set %}
+        <li> {{m}}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p> Ooops! Nothing was available for this year. </p>
+{% endif %}
