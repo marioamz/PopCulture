@@ -11,6 +11,9 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Franklin" rel="stylesheet">
+
 
     <!-- Custom styles for this template -->
     {% load static %}
@@ -22,19 +25,18 @@
     <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
       <header class="masthead mb-auto">
         <div class="inner">
-          <h3 class="masthead-brand">The CAPP Romantics</h3>
+          <h3 class="masthead-brand">The CAPP Romantics present...</h3>
           <nav class="nav nav-masthead justify-content-center">
             <a class="nav-link active" href="#">Home</a>
-            <a class="nav-link" href="#">Features</a>
-            <a class="nav-link" href="#">Contact</a>
+            <a class="nav-link" href="#">Methods</a>
+            <a class="nav-link" href="#">Demo</a>
           </nav>
         </div>
       </header>
 
       <main role="main" class="inner cover">
         <h1 class="cover-heading"><img src="{% static 'popsents/images/chance.png'%}" class="img-fluid" alt="Chance"></h1>
-        <p class="lead">Ever wonder what your parents were listening to when they first met in 1985?
-            Some songs sure do make you just want to fall in love, don't they? </p>
+        <p class="lead">Ever wonder what songs were playing in the bar where your parents first met?</p>
         <p class="lead">
           <a href='{%  url 'popsents:years' %}' class="btn btn-lg btn-secondary">Let's find out!</a>
         </p>

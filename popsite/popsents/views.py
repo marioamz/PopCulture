@@ -8,19 +8,13 @@ from .models import Event, Media
 from .forms import YearForm
 
 
-def select_year(request):
+def home_page(request):
     '''
-    Basic view where user selects year
-    Returns a result from the database
+    Home Page View
+    Button links to Select Year and Type View
     '''
-    if request.method == "POST":
-        print(request)
-        form = YearForm(request.POST)
-        year = form.data['year']
-        return year_detail(request, year)
-    else:
-        form = YearForm()
-    return render(request, 'popsents/years.html', {'form': form})
+    template = 'popsents/home.html'
+    return render(request, template)
 
 
 def select_year_and_type(request):
@@ -33,14 +27,12 @@ def select_year_and_type(request):
         form = YearForm(request.POST)
         year = form.data['year']
         mt = form.data['media_type']
-        print(year, mt)
-        #print(form.data)
+        print(form)
         return year_media_detail(request, year, mt)
     else:
         form = YearForm()
 
     return render(request, 'popsents/years.html', {'form': form})
-
 
 def years_list(request):
     '''
@@ -88,8 +80,3 @@ class IndexView(generic.ListView):
 def detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     return render(request, 'popsents/detail.html', {'event': event})
-
-
-def home_page(request):
-    template = 'popsents/home.html'
-    return render(request, template)

@@ -9,23 +9,27 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
-  <link rel="shortcut icon" href="/favicon.ico">
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'popsents/css/yearview.css' %}" />
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
 
-  <title>Pop Culture Renegades</title>
+  <title>Select a year</title>
 </head>
 
 
 <body>
-  <header>Search by Year</header>
+  <header>
+      <h1>Take a walk down memory lane, <br>shall we?</h1>
+  </header>
 
   <div class="wrapper">
     <section>
         <form action="" method="post">
             {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Take me back!">
+            {{ form.as_p }}
+            <p>
+            <button type="submit">Take me back!</button>
+            </p>
         </form>
     </section>
     <div class="push"></div>
