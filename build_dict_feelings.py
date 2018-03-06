@@ -19,42 +19,45 @@ primary_emotions = {"anticipation":["vigilance", "interest", "optimism", "aggres
                     "disgust":["loathing", "boredom", "contempt", "remorse", "disgust"]}
 
 
-def create_csv(primary_emotions, p_df):
+def create_csv(primary_emotions, emotion_d):
     '''
+    Inputs emotion dictionary -> returns CSV
     Creates a CSV file that can be then linked to Django.
     '''
-    
-    data = process_frame(primary_emotions, p_df)
-    
+
+    #data = process_frame(primary_emotions, p_df)
+
     csvfile = open("test.csv", 'w')
     filewriter = csv.writer(csvfile, delimiter=",", quotechar=",")
-        
-    for year, sentiments in data.items():
+
+    for year, sentiments in emotion_d.items():
+        print(year)
+
         list_for_csv =[]
+        list_for_csv.append(int(year))
+
         emotions, sent = sentiments
         top_e = sorted(emotions.items(), key = lambda x:-x[1])[:3]
-        total = 0
-        list_for_csv.append(year)
-        
-        for e, cnt in emotions.items():
-            total += cnt
-            
+        total = sum(emotions.values())
+
         for tup in top_e:
-            emot, freq  = tup
-            freq /= total
-            freq *= 100
-            list_for_csv.append((emot, freq))
-                
+            emotion, freq  = tup
+            freq = freq/total * 100
+            list_for_csv.append(emotion)
+            list_for_csv.append(freq)
+
             #move top 3 into columns
-        for measure, percent in sent.items():
-            list_for_csv.append(percent)
-                    
-        filewriter.writerow((list_for_csv[0], list_for_csv[1],
-                             list_for_csv[2], list_for_csv[3],
-                            list_for_csv[4], list_for_csv[5],
-                             list_for_csv[6], list_for_csv[7]))
-            
-            
+
+        order = ('compound', 'pos', 'neu', 'neg')
+        for val in order:
+            if val in sent:
+                list_for_csv.append(sent[val])
+            else:
+                list_for_csv.append(0)
+
+        filewriter.writerow((list_for_csv))
+
+
 def process_frame(primary_emotions, p_df):
     '''
     Takes a dataframe. Using all observations corresponding to a given year,
@@ -81,7 +84,7 @@ def process_frame(primary_emotions, p_df):
 # def get_predominant(year_dict):
 #     pred_feels = {}
 #     for year in year_dict:
-# 
+#
 #         predominant = ""
 #         mfreq = 0
 #         for sent, freq in year.items():
@@ -90,7 +93,7 @@ def process_frame(primary_emotions, p_df):
 #         pred_feels[year] = predominant
 #
 #     return d_year_feels, pred_feels
-    
+
 
 def process_text(target_text, feels, d_updt):
     '''
@@ -118,29 +121,29 @@ def sentiments(yearly_df):
     all plots in the year in question, and then takes the average
     of those figures.
     '''
-    
+
     sent_dict = {}
     sentiment = {}
     sid = SentimentIntensityAnalyzer()
-    
+
     for row in yearly_df.iterrows():
         if type(row[1].Plot) is str:
             ####
             tokenized = tokenize(row[1].Plot)
             no_stops = rm_stopwords(tokenized)
             plots = ' '.join(no_stops)
-            
+
             sentiment = sid.polarity_scores(plots)
-    
+
         for sent, score in sentiment.items():
             if sent not in sent_dict:
                 sent_dict[sent] = score
             else:
                 sent_dict[sent] += score
-                
+
     for s, sc in sent_dict.items():
         sent_dict[s] = sc / len(yearly_df)
-    
+
     return sent_dict
 
 
@@ -173,7 +176,7 @@ def add_stem_words(d_words):
         for i in syn:
             # still unsure if this is the right loop
             if lemmatizer.lemmatize(i) not in syn:
-                # this isn't working because you need to a positional 
+                # this isn't working because you need to a positional
                 # value to lemmatize (word, 'v')
                 stems_f[i] = lemmatizer.lemmatize(i)
                 # do we incorporate this into the broader dictionary here or later?

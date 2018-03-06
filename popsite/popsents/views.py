@@ -34,6 +34,20 @@ def select_year_and_type(request):
 
     return render(request, 'popsents/years.html', {'form': form})
 
+
+def year_media_detail(request, input_year, input_type):
+    '''
+    '''
+    media_set = Media.objects.filter(year=input_year, media_type=input_type) # queryset
+    print(media_set)
+    template_name = 'popsents/year_media.html'
+    context = {'input_year': input_year,
+               'media_type': input_type,
+               'media_set': media_set}
+    return render(request, template_name, context)
+
+
+
 def years_list(request):
     '''
     Index of all years covered in project
@@ -51,17 +65,6 @@ def year_detail(request, event_year):
     template_name = 'popsents/year_detail.html'
     context = {'event_year': event_year,
                'yearly_events': events_set}
-    return render(request, template_name, context)
-
-def year_media_detail(request, input_year, input_type):
-    '''
-    '''
-    media_set = Media.objects.filter(year=input_year, media_type=input_type) # queryset
-    print(media_set)
-    template_name = 'popsents/year_media.html'
-    context = {'input_year': input_year,
-               'media_type': input_type,
-               'media_set': media_set}
     return render(request, template_name, context)
 
 
