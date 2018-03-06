@@ -19,15 +19,23 @@ import pandas as pd
 import numpy as np
 import condensed_db as cdb
 import re
+import csv
 
-primary_emotions = {"anticipation":["vigilance", "interest", "optimism", "aggressiveness", "anticipation"],
-                    "anger":["rage", "annoyance", "aggressiveness", "contempt", "anger"],
+primary_emotions = {"anticipation":["vigilance", "interest", "optimism",
+                                    "aggressiveness", "anticipation"],
+                    "anger":["rage", "annoyance", "aggressiveness", "contempt",
+                                    "anger"],
                     "joy":["ecstasy", "serenity", "optimism", "love", "joy"],
-                    "trust":["admiration", "acceptance", "love", "submission", "trust"],
-                    "fear":["terror", "apprehension", "submission", "awe", "fear"],
-                    "surprise":["amazement", "distraction", "awe", "disapproval", "surprise"],
-                    "sadness":["pensiveness", "grief", "remorse", "disapproval", "sadness"],
-                    "disgust":["loathing", "boredom", "contempt", "remorse", "disgust"]}
+                    "trust":["admiration", "acceptance", "love", "submission",
+                                    "trust"],
+                    "fear":["terror", "apprehension", "submission", "awe",
+                                    "fear"],
+                    "surprise":["amazement", "distraction", "awe",
+                                    "disapproval", "surprise"],
+                    "sadness":["pensiveness", "grief", "remorse", "disapproval",
+                                    "sadness"],
+                    "disgust":["loathing", "boredom", "contempt", "remorse",
+                                    "disgust"]}
 
 
 def modeling(p_df, clusters, model = 1, stem = True, unique = True, nstopwords = True):
@@ -93,13 +101,13 @@ def main8_frequencies(modeled_frame):
                     FEELING[1] += 1
         tot += FEELING[1]
     for i in main_8:
-        i[2] = (i[1] / tot) *100
+        i[2] = (i[1] / tot) * 100
 
 
     return sorted(main_8)
 
 
-def analyze_model(comp_frame, clusters, model = 1, stem = True, unique = True, nstopwords = True):
+def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique = True, nstopwords = True):
     '''
     From a frame created by condensed_db.py, analyze_model does the following:
     1. Runs model returning frame with new columns: tokenized text, and cluster.
@@ -117,7 +125,20 @@ def analyze_model(comp_frame, clusters, model = 1, stem = True, unique = True, n
     -Not clusterizing, getting general statistics per year. (bag of words
         approach)
     '''
+    csvfile = open(csv_file, 'w')
+    filewriter = csv.writer(csvfile, delimiter=",", quotechar=",")
+
     model_f = modeling(comp_frame, clusters, model, stem, unique, nstopwords)
+    COL_HEADERS = ["anticipation count","anticipation percentage",
+            "anger count", "anger percentage", "joy count", "joy percentage",
+            "tryst count", "trus percentage", "fear count",
+            "fear percentage", "surprise count", "surprise percentage",
+            "sadness count", "sadness percentage",
+            "disgust count", "disgust percentage", "compound", "pos", "neu",
+            "neg"]
+
+    for val in COL_HEADERS:
+         filewriter.writerow([val])
 
     lst_freqs = []
     if model !=3:
@@ -148,6 +169,21 @@ def analyze_model(comp_frame, clusters, model = 1, stem = True, unique = True, n
         sent = sentiments(yearly_df)
         yr_d[yr] = (thisispryr, sent)
         #ADDITIONALLY, FOR YEAR, REGARDLESS OF MODEL, GETTING SENTIMENTS.
+
+        csv_list = [yr]
+        for i in thisispryr:
+            csv_list.append(i[1:])
+        print(sent)
+        for i, val in sent.items():
+            csv_list.append(vals)
+        print(len(csv_list))
+
+        for val in csv_list:
+             filewriter.writerow([val])
+        # filewriter.writerow(csv_list[0], csv_list[1], csv_list[2], csv_list[3],
+        # csv_list[4], csv_list[5], csv_list[6], csv_list[7], csv_list[8], csv_list[9],
+        # csv_list[10], csv_list[11], csv_list[12], csv_list[13], csv_list[14], csv_list[15],
+        # csv_list[16], csv_list[17], csv_list[18], csv_list[19], csv_list[20])
 
     return yr_d
 
@@ -181,11 +217,12 @@ def sentiments(yearly_df):
     '''
 
     sent_dict = {}
+    sentiment = {}
     sid = SentimentIntensityAnalyzer()
 
     for row in yearly_df.iterrows():
-        if type(row[1].Plot) is str:
-            sentiment = sid.polarity_scores(row[1].Plot)
+        plots = ' '.join(row[1].Clean_tokens)
+        sentiment = sid.polarity_scores(plots)
 
         for sent, score in sentiment.items():
             if sent not in sent_dict:
@@ -279,9 +316,11 @@ def get_feelings():
     for i, val in feelings.items():
         feels.append(stemmer.stem(i))
         for x in val:
-            feels.append(stemmer.stem(x)
-    total_feelings = list(set(feels))
-    return total_feelings
+            feels.append(stemmer.stem(x))
+
+    t_feelings = list(set(feels))
+
+    return t_feelings
 
 def get_feelings_dict():
     stemmer = PorterStemmer()
