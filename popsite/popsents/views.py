@@ -5,7 +5,17 @@ from django.urls import reverse
 from django.views import generic
 
 from .models import Event, Media, TopSents, CompoundSents
-from .forms import YearForm
+from .forms import YearForm, SentimentFinder
+
+
+EMOJI_DICT = {"anticipation": "&#x1F648;",
+              "anger": "&#x1F621;",
+              "joy": "&#x1F606;",
+              "trust": "&#x1F64F;",
+              "fear": "&#x1F631;",
+              "surprise": "&#x1F47B;",
+              "sadness": "&#x1F62D;",
+              "disgust": "&#x1F4A9;"}
 
 
 def home_page(request):
@@ -15,6 +25,36 @@ def home_page(request):
     '''
     template = 'popsents/home.html'
     return render(request, template)
+
+
+def find_sentiment(request):
+    if request.method == "POST":
+        form = SentimentFinder(request.POST)
+        y = form.data['year']
+        return emojis(request, y)
+    else:
+        form = SentimentFinder()
+    return render(request, 'popsents/years.html', {'form': form})
+
+
+
+
+
+
+
+def emojis(request, input_year):
+    sents = TopSents.objects.filter(year=input_year)
+    context = {}
+    trows = ""
+    for i, sent in enumerate(sents):
+        num_emojis = int(sent.intensity // 10)
+        emoji_html = ' '.join([EMOJI_DICT[sent.emotion]] * (num_emojis + 1) * 2)
+        trows += "<tr><th scope='row'>{}</th><td>{}</td></tr>".format(sent.emotion, emoji_html)
+    table = "<table class='table table-hover'><tbody>{}</tbody></table>".format(trows)
+    context['table'] = table
+    context['year'] = input_year
+    template = 'popsents/sentiment_finder.html'
+    return render(request, template, context)
 
 
 def select_year_and_type(request):

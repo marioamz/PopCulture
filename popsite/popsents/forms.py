@@ -1,6 +1,9 @@
 from django import forms
 from .models import Media
 
+
+YEAR_RANGE = tuple([(i, i) for i in range(1945,2019)])
+
 class YearForm(forms.Form):
     year = forms.ChoiceField(label='Pick a Year! ',
                              choices=tuple([(i, i) for i in range(1945,2019)]),
@@ -10,3 +13,8 @@ class YearForm(forms.Form):
                                    choices=(('Book', "Book"),
                                             ('Movie', "Movie"),
                                             ('Song', "Song")))
+
+class SentimentFinder(forms.Form):
+    year = forms.ChoiceField(label="Pick a Year",
+                             choices=YEAR_RANGE,
+                             required=True)

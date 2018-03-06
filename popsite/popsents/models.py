@@ -45,6 +45,11 @@ class TopSents(models.Model):
     rank = models.IntegerField()
     intensity = models.DecimalField(max_digits=8, decimal_places=3)
 
+    def __str__(self):
+        sent_string = "Top {} emotion for {} was {}, with an intensity of {}.".format(
+                        self.rank, self.year, self.emotion, self.intensity)
+        return sent_string
+
 class CompoundSents(models.Model):
     '''
     '''
@@ -54,6 +59,15 @@ class CompoundSents(models.Model):
     neutral = models.DecimalField(max_digits=8, decimal_places=3)
     negative = models.DecimalField(max_digits=8, decimal_places=3)
 
+    def __str__(self):
+        comp_string = ''
+        if self.compound > 0:
+            comp_string = 'positive'
+        elif self.compound < 0:
+            comp_string = 'negative'
+        else:
+            comp_string = 'neutral'
+        return "{} was filled with {} vibes.".format(self.year, comp_string)
 
 ########################
 #  DATA DUMP INTO SQL  #

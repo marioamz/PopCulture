@@ -52,7 +52,7 @@ def create_csv(primary_emotions, emotion_d):
             else:
                 list_for_csv.append(0)
 
-        filewriter.writerow((list_for_csv))
+        filewriter.writerow(list_for_csv)
 
 
 def process_frame(primary_emotions, p_df):
