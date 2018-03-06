@@ -104,7 +104,7 @@ def main8_frequencies(modeled_frame):
         i[2] = (i[1] / tot) * 100
 
 
-    return sorted(main_8)
+    return main_8
 
 
 def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique = True, nstopwords = True):
@@ -174,7 +174,6 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
         for i in thisispryr:
             csv_list.append(i[1])
             csv_list.append(i[2])
-        print(sent)
 
         order = ('compound', 'pos', 'neu', 'neg')
         for val in order:
@@ -182,10 +181,6 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
                 csv_list.append(sent[val])
             else:
                 csv_list.append(0)
-
-        filewriter.writerow(csv_list)
-        print(len(csv_list))
-
 
         filewriter.writerow(csv_list)
         # filewriter.writerow(csv_list[0], csv_list[1], csv_list[2], csv_list[3],
