@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import generic
 
-from .models import Event, Media
+from .models import Event, Media, TopSents, CompoundSents
 from .forms import YearForm
 
 

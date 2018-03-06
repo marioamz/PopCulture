@@ -31,7 +31,6 @@ def create_csv(primary_emotions, emotion_d):
     filewriter = csv.writer(csvfile, delimiter=",", quotechar=",")
 
     for year, sentiments in emotion_d.items():
-        print(year)
 
         list_for_csv =[]
         list_for_csv.append(int(year))
@@ -45,8 +44,6 @@ def create_csv(primary_emotions, emotion_d):
             freq = freq/total * 100
             list_for_csv.append(emotion)
             list_for_csv.append(freq)
-
-            #move top 3 into columns
 
         order = ('compound', 'pos', 'neu', 'neg')
         for val in order:
@@ -70,7 +67,6 @@ def process_frame(primary_emotions, p_df):
     list_years = list(p_df.Year.unique())
 
     for i in list_years:
-
         yearly_df = p_df[(p_df.Year== i)]
         d_sents = sentiments(yearly_df)
         d_feels = {}
