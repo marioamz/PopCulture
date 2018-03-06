@@ -101,13 +101,17 @@ def main8_frequencies(modeled_frame):
                     FEELING[1] += 1
         tot += FEELING[1]
     for i in main_8:
-        i[2] = (i[1] / tot) * 100
+        if tot !=0:
+            i[2] = (i[1] / tot) * 100
+        else:
+            i[2] = 0
 
 
     return main_8
 
 
-def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique = True, nstopwords = True):
+def analyze_model(csv_file, comp_frame, level = 3, model = 3, clusters = 8,
+                        stem = True, unique = True, nstopwords = True):
     '''
     From a frame created by condensed_db.py, analyze_model does the following:
     1. Runs model returning frame with new columns: tokenized text, and cluster.
@@ -119,11 +123,17 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
     Models:
     -Clustering vectorizing on a matrix using all content of the plots. We do so
     in order to contextualize each word and move beyond a bag of words approach.
+    (1)
 
-    -Clustering vectorizing on lexicus only related to feelings.
+    -Clustering vectorizing on lexicus only related to feelings. (2)
 
     -Not clusterizing, getting general statistics per year. (bag of words
-        approach)
+        approach (3)
+
+    - Level - 1: Only songs
+            - 2: Movies and books
+            - 3: All categories
+
     '''
     csvfile = open(csv_file, 'w')
     filewriter = csv.writer(csvfile, delimiter=",", quotechar=",")
@@ -141,6 +151,12 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
     filewriter.writerow(COL_HEADERS)
 
     lst_freqs = []
+    if level !=3:
+        if level == 1:
+            model_f = model_f[(model_f.Type== "Song")]
+        elif level == 2:
+            model_f = model_f[(model_f.Type!= "Song")]
+
     if model !=3:
         for i in range(clusters):
             temp = model_f[model_f.Clust == i]
@@ -149,6 +165,7 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
 
     list_years = list(model_f.Year.unique())
     yr_d = {}
+
     for yr in list_years:
         yearly_df = model_f[(model_f.Year== yr)]
 
@@ -183,11 +200,6 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
                 csv_list.append(0)
 
         filewriter.writerow(csv_list)
-        # filewriter.writerow(csv_list[0], csv_list[1], csv_list[2], csv_list[3],
-        # csv_list[4], csv_list[5], csv_list[6], csv_list[7], csv_list[8], csv_list[9],
-        # csv_list[10], csv_list[11], csv_list[12], csv_list[13], csv_list[14], csv_list[15],
-        # csv_list[16], csv_list[17], csv_list[18], csv_list[19], csv_list[20])
-
     return yr_d
 
 def tfidf_km(plots, clusters, vocbs = None):
