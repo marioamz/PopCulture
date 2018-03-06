@@ -37,6 +37,10 @@ def clean_books(path_file_b, path_file_p):
     clean_books_build(bsbooks_df, cmbooks_df)
     # #Pt 2 of updating plots
     clean_books_2ndstage(bsbooks_df, cmbooks_df)
+    bsbooks_df['Type'] = "Book"
+
+    bsbooks_df = bsbooks_df.loc[:, ["Year","Type","Plot","Title", "Author"]]
+
     #
     # return bsbooks_df
     return bsbooks_df
@@ -102,9 +106,9 @@ def clean_songs(path_file):
     songs_df = pd.read_csv(path_file, sep=',', header = "infer",
                            error_bad_lines= False, encoding="cp775")
 
-    songs_df.rename(columns = {'Lyrics':'Plot', 'Song': 'Title'}, inplace = True)
+    songs_df.rename(columns = {'Lyrics':'Plot', 'Song': 'Title', 'Artist':'Author'}, inplace = True)
     songs_df['Type'] = "Song"
-    songs_df = songs_df.loc[:, ["Year","Type","Plot","Title"]]
+    songs_df = songs_df.loc[:, ["Year","Type","Plot","Title", "Author"]]
     return songs_df
 
 '''
@@ -155,10 +159,10 @@ def clean_movies(path_file):
     movies_df = movies_df.dropna(subset=["popularity"])
 
     movies_df['Type'] = "Movie"
-    movies_df.rename(columns = {"overview":"Plot"}, inplace = True)
+    movies_df.rename(columns = {"overview":"Plot", "production_companies": "Author"}, inplace = True)
 
     movies_df = movies_df.sort_values('popularity',ascending = False).groupby('Year').head(100)
-    movies_df = movies_df.loc[:, ["Year","Type","Plot","Title"]]
+    movies_df = movies_df.loc[:, ["Year","Type","Plot","Title", "Author"]]
 
     return movies_df
 
@@ -178,5 +182,7 @@ def create_file():
     movies_df = clean_movies(PATH_FILE_MOVIES)
     books_df = clean_books(PATH_FILE_BOOKS, PATH_FILE_PLOTS)
     result = concatenate([songs_df, movies_df, books_df])
+    result.to_csv("final_media_df.csv")
+    result.reset_index(inplace= True)
 
     return result
