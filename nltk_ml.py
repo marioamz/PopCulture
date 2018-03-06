@@ -129,16 +129,16 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
     filewriter = csv.writer(csvfile, delimiter=",", quotechar=",")
 
     model_f = modeling(comp_frame, clusters, model, stem, unique, nstopwords)
-    COL_HEADERS = ["anticipation count","anticipation percentage",
+    COL_HEADERS = ["Year", "anticipation count","anticipation percentage",
             "anger count", "anger percentage", "joy count", "joy percentage",
-            "tryst count", "trus percentage", "fear count",
+            "trust count", "trust percentage", "fear count",
             "fear percentage", "surprise count", "surprise percentage",
             "sadness count", "sadness percentage",
             "disgust count", "disgust percentage", "compound", "pos", "neu",
             "neg"]
-
-    for val in COL_HEADERS:
-         filewriter.writerow([val])
+    #
+    # for val in COL_HEADERS:
+    filewriter.writerow(COL_HEADERS)
 
     lst_freqs = []
     if model !=3:
@@ -172,14 +172,22 @@ def analyze_model(csv_file, comp_frame, clusters, model = 1, stem = True, unique
 
         csv_list = [yr]
         for i in thisispryr:
-            csv_list.append(i[1:])
+            csv_list.append(i[1])
+            csv_list.append(i[2])
         print(sent)
-        for i, val in sent.items():
-            csv_list.append(vals)
+
+        order = ('compound', 'pos', 'neu', 'neg')
+        for val in order:
+            if val in sent:
+                csv_list.append(sent[val])
+            else:
+                csv_list.append(0)
+
+        filewriter.writerow(csv_list)
         print(len(csv_list))
 
-        for val in csv_list:
-             filewriter.writerow([val])
+
+        filewriter.writerow(csv_list)
         # filewriter.writerow(csv_list[0], csv_list[1], csv_list[2], csv_list[3],
         # csv_list[4], csv_list[5], csv_list[6], csv_list[7], csv_list[8], csv_list[9],
         # csv_list[10], csv_list[11], csv_list[12], csv_list[13], csv_list[14], csv_list[15],
