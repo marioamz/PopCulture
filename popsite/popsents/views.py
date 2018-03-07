@@ -31,32 +31,31 @@ def find_sentiment(request):
     if request.method == "POST":
         form = SentimentFinder(request.POST)
         y = form.data['year']
-        return emojis(request, y)
+        template = 'popsents/sentiment_finder.html'
+        context = emojis(y)
+        events_set = Event.objects.filter(year=y)
+        context['events'] = events_set
+        return render(request, template, context)
     else:
         form = SentimentFinder()
     return render(request, 'popsents/years.html', {'form': form})
 
 
-
-
-
-
-
-def emojis(request, input_year):
+def emojis(input_year):
     sents = TopSents.objects.filter(year=input_year)
     context = {}
     trows = ""
     for i, sent in enumerate(sents):
         num_emojis = int(sent.intensity // 10)
-        emoji_html = ' '.join([EMOJI_DICT[sent.emotion]] * (num_emojis + 1) * 2)
-        trows += "<tr><th scope='row'>{}</th><td>{}</td></tr>".format(sent.emotion, emoji_html)
+        emoji_html = ' '.join([EMOJI_DICT[sent.emotion]] * (num_emojis + 1))
+        trows += "<tr><th scope='row'>{}</th><td>{}</td><td>{}%</td></tr>".format(sent.emotion, emoji_html, int(sent.intensity))
     table = "<table class='table table-hover'><tbody>{}</tbody></table>".format(trows)
     context['table'] = table
     context['year'] = input_year
-    template = 'popsents/sentiment_finder.html'
-    return render(request, template, context)
+    return context
 
 
+# currently not using
 def select_year_and_type(request):
     '''
     Basic view where user selects year
@@ -85,7 +84,6 @@ def year_media_detail(request, input_year, input_type):
                'media_type': input_type,
                'media_set': media_set}
     return render(request, template_name, context)
-
 
 
 def years_list(request):
