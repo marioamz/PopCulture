@@ -75,6 +75,9 @@ h1 {
 /* Sticky footer */
 html, body { height: 100%; }
 
+
+}
+
 .wrapper {
   clear: both;
   min-height: 100%;

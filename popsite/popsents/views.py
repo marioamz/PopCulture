@@ -3,6 +3,7 @@ from django.template import loader
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import generic
+from random import randint
 
 from .models import Event, Media, TopSents, CompoundSents
 from .forms import YearForm, SentimentFinder
@@ -23,7 +24,7 @@ def home_page(request):
     Home Page View
     Button links to Select Year and Type View
     '''
-    template = 'popsents/home.html'
+    template = 'popsents/project.html'
     return render(request, template)
 
 
@@ -32,9 +33,15 @@ def find_sentiment(request):
         form = SentimentFinder(request.POST)
         y = form.data['year']
         template = 'popsents/sentiment_finder.html'
+
         context = emojis(y)
-        events_set = Event.objects.filter(year=y)
+        events_set = random_events_generator(y)
+        media_set = random_media_generator(y)
+        compound = CompoundSents.objects.filter(year=y)[0]
         context['events'] = events_set
+        context['media'] = media_set
+        context['compound'] = compound
+
         return render(request, template, context)
     else:
         form = SentimentFinder()
@@ -54,6 +61,33 @@ def emojis(input_year):
     context['year'] = input_year
     return context
 
+
+def random_events_generator(input_year):
+    events_set = Event.objects.filter(year=input_year)
+    random_events = []
+    for _ in range(3):
+        random_index = randint(0, len(events_set))
+        random_events.append(events_set[random_index])
+
+    return random_events
+
+
+def random_media_generator(input_year):
+    media = ('Book', 'Movie', 'Song')
+    random_media = []
+    for m in media:
+        media_set = Media.objects.filter(year=input_year, media_type=m)
+        print(media_set)
+        random_index = randint(0, len(media_set))
+        medium = media_set[random_index]
+        if m == "Book":
+            mstring = "We read {} by {}".format(medium.title, medium.author)
+        if m == "Movie":
+            mstring = "We packed the theaters for {}".format(medium.title)
+        if m == "Song":
+            mstring = "We rocked out to {} by {}".format(medium.title, medium.author)
+        random_media.append(mstring)
+    return random_media
 
 # currently not using
 def select_year_and_type(request):

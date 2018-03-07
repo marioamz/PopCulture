@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'popsents/css/emoji.css' %}" />
-  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
 
   <title>emoji</title>
 </head>
@@ -20,23 +20,41 @@
 <body>
 
   <div class="wrapper">
+
        <div class="row align-items-center">
-           <h1>{{year}}</h1>
+           <h1>{{compound}}</h1>
        </div>
-    <section>
-        {{ table|safe }}
-    </section>
-    <div class="push"></div>
+
+        <section="emo-table">
+            {{ table|safe }}
+        </section>
+
+        <section="media">
+            {% if media %}
+                <ul>
+                {% for m in media %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+
+        <section="events">
+            {% if events %}
+                <ul>
+                {% for event in events %}
+                    <li>{{event.text}}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No events are available.</p>
+            {% endif %}
+        </section>
+
+        <div class="push"></div>
   </div>
-  {% if events %}
-      <ul>
-      {% for event in events %}
-          <li> {{event}}</li>
-      {% endfor %}
-      </ul>
-  {% else %}
-      <p> Ooops! Nothing was available for this year. </p>
-  {% endif %}
+
+
 
   <!-- JavaScript -->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
