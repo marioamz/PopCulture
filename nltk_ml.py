@@ -22,20 +22,41 @@ import re
 import csv
 
 primary_emotions = {"anticipation":["vigilance", "interest", "optimism",
-                                    "aggressiveness", "anticipation"],
+                                    "aggressiveness", "anticipation", "worrisome",
+                                    "anxiety", "anxious", "paranoia" "paranoid",
+                                    "expectation", "nervous", "wait", "waiting"],
                     "anger":["rage", "annoyance", "aggressiveness", "contempt",
-                                    "anger"],
-                    "joy":["ecstasy", "serenity", "optimism", "love", "joy"],
+                                    "anger", "havoc", "angry", "mad", "hell", "kill",
+                                    "vengeance", "revenge", "rogue", "rant", "trash",
+                                    "bitch"],
+                    "joy":["ecstasy", "serenity", "optimism", "love", "joy", "smile",
+                                    "heart", "sunshine", "warmth", "warm", "rainbows",
+                                    "paradise", "bloom", "welcome", "friend", "smile",
+                                    "cool", "inspire", "happy", "laugh", "laughter",
+                                    "bliss", "fun", "beautiful", "awesome", "dope",
+                                    "excitement"],
                     "trust":["admiration", "acceptance", "love", "submission",
-                                    "trust"],
+                                    "trust", "yours", "protection", "believe", "open"
+                                    , "alright", "comfort", "friend", "cool", "team",
+                                    "strong", "strength"],
                     "fear":["terror", "apprehension", "submission", "awe",
-                                    "fear"],
+                                    "fear", "posttraumatic", "trauma", "traumatic",
+                                    "anxiety", "anxious", "nervous", "refuge",
+                                    "escap", "escape", "shook"],
                     "surprise":["amazement", "distraction", "awe",
-                                    "disapproval", "surprise"],
+                                    "disapproval", "surprise", "wild", "bewild",
+                                    "believe", "unexpected", "shock",
+                                    "back", "strarstruck"],
                     "sadness":["pensiveness", "grief", "remorse", "disapproval",
-                                    "sadness"],
+                                    "sadness", "hurt", "forsaken" "emotionless",
+                                    "cry", "cri", "broken", "tear", "tears", "cloud",
+                                    "clouds", "cold", "blues", "blue", "gloom", "rain",
+                                    "goodbye", "numb", "die", "surrend", "kill", "death",
+                                    "hunger", "wish"],
                     "disgust":["loathing", "boredom", "contempt", "remorse",
-                                    "disgust"]}
+                                    "disgust", "hell", "vomit", "nausea", "unacceptable",
+                                    "ugly", "nasty", "horrible", "naughty", "ew",
+                                    "ugh"]}
 
 
 def modeling(p_df, clusters, model = 1, stem = True, unique = True, nstopwords = True):
@@ -48,37 +69,39 @@ def modeling(p_df, clusters, model = 1, stem = True, unique = True, nstopwords =
     p_clean.reset_index(inplace= True)
     plots = list(p_clean.Plot)
 
-    #MODEL 1
-    if model == 1:
-        #VECTORIZING USING ALL AVAILABLE INFORMATION
-        clust_labs = tfidf_km(plots, clusters)
 
-        #print(m.groupby(['Clust']).Year.max())
-        #print(m.groupby(['Clust']).Year.min())
-        #print(m.groupby(['Clust']).Year.mean())
-        #print(m.groupby(['Type']).Clust.mean())
-
-    #MODEL 2
+    #MODEL 2 CLUSTERS  #VECTORIZING USING ALL AVAILABLE INFORMATION
     if model == 2:
-        #Did not work
-        dict_feels = get_feelings_dict()
-        l_feels = []
-        for i in dict_feels:
-            l_feels.append(i)
-        #Can only pass on lists, 8 primary are not enough
-        clust_labs = tfidf_km(plots, clusters, l_feels)
-
-    #MODEL 3
-    if model != 3:
+        clust_labs = tfidf_km(plots, clusters)
         for inx, clust in enumerate(clust_labs):
             p_clean.loc[inx, "Clust"] = clust
 
+    #if model == 3:
+
     p_clean.loc[:, "Clean_tokens"] = ""
+    p_clean.loc[:, "Total_tokens"] = 0
+    p_clean.loc[:, "Feelings_tokens"] = 0
+    feels_d = get_feelings_dict()
+    feels_ls = []
+    for i, x in feels_d.items():
+        if i not in feels_ls:
+            feels_ls.append(i)
+        if x not in feels_ls:
+            feels_ls+=x
+
     for row in p_clean.iterrows():
         if type(row[1].Plot) is str:
             x = process_text(row[1].Plot, stem, unique, nstopwords)
             p_clean.at[row[0], "Clean_tokens"] = x
+            p_clean.at[row[0], "Total_tokens"] = len(x)
 
+            #Check again
+
+            for k in x:
+                if k in feels_ls:
+                    p_clean.at[row[0], "Feelings_tokens"]+= 1
+
+    print("yay")
     return p_clean
 
 
@@ -93,24 +116,27 @@ def main8_frequencies(modeled_frame):
             ["trust",0, 0],["fear", 0, 0],["surprise", 0, 0], ["sadness", 0, 0],
             ["disgust", 0, 0]]
     tot = 0
+    feeling = 0
+
     for FEELING in main_8:
         for row in modeled_frame.iterrows():
-
+            print(row[0]) #To see if it is advancing
             for i in row[1].Clean_tokens:
                 if i in feels_d[FEELING[0]]:
                     FEELING[1] += 1
+                    modeled_frame.at[row[0], "Feelings_tokens"]+= 1 #ADDED FOR ANALYSIS, NOT V EFFICIENT
         tot += FEELING[1]
+
     for i in main_8:
         if tot !=0:
             i[2] = (i[1] / tot) * 100
         else:
             i[2] = 0
 
-
     return main_8
 
 
-def analyze_model(csv_file, comp_frame, level = 3, model = 3, clusters = 8,
+def analyze_model(csv_file, comp_frame, level = 1, model = 1, clusters = 8,
                         stem = True, unique = True, nstopwords = True):
     '''
     From a frame created by condensed_db.py, analyze_model does the following:
@@ -121,18 +147,16 @@ def analyze_model(csv_file, comp_frame, level = 3, model = 3, clusters = 8,
         characteristics.
 
     Models:
+    -Not clusterizing, getting general statistics per year. (bag of words
+    approach (1)
+
     -Clustering vectorizing on a matrix using all content of the plots. We do so
     in order to contextualize each word and move beyond a bag of words approach.
-    (1)
+    (2)
 
-    -Clustering vectorizing on lexicus only related to feelings. (2)
-
-    -Not clusterizing, getting general statistics per year. (bag of words
-        approach (3)
-
-    - Level - 1: Only songs
-            - 2: Movies and books
-            - 3: All categories
+    - Level - 1: All categories
+            - 2: Only songs
+            - 2: Only movies and books
 
     '''
     csvfile = open(csv_file, 'w')
@@ -146,18 +170,18 @@ def analyze_model(csv_file, comp_frame, level = 3, model = 3, clusters = 8,
             "sadness count", "sadness percentage",
             "disgust count", "disgust percentage", "compound", "pos", "neu",
             "neg"]
-    #
+
     # for val in COL_HEADERS:
     filewriter.writerow(COL_HEADERS)
 
     lst_freqs = []
-    if level !=3:
-        if level == 1:
+    if level != 1:
+        if level == 2:
             model_f = model_f[(model_f.Type== "Song")]
-        elif level == 2:
+        elif level == 3:
             model_f = model_f[(model_f.Type!= "Song")]
 
-    if model !=3:
+    if model == 2:
         for i in range(clusters):
             temp = model_f[model_f.Clust == i]
             l = main8_frequencies(temp)
@@ -169,7 +193,10 @@ def analyze_model(csv_file, comp_frame, level = 3, model = 3, clusters = 8,
     for yr in list_years:
         yearly_df = model_f[(model_f.Year== yr)]
 
-        if model !=3:
+        if model == 1:
+            thisispryr = main8_frequencies(yearly_df)
+
+        elif model == 2 :
             most_freq_cluster = yearly_df.Clust.mode().loc[0]
             most_freq_cluster = float(most_freq_cluster)
 
@@ -178,15 +205,10 @@ def analyze_model(csv_file, comp_frame, level = 3, model = 3, clusters = 8,
                     thisispryr = stats[1]
                     break
 
-        elif model == 3:
-            thisispryr = main8_frequencies(yearly_df)
-
-        #Revise where we are getting sentiment per year to abstract and
-        #avoid iterating twice in file.
+        #REVISION NEEDED where we are getting sentiment per year to abstract and avoid iterating twice in file.
         sent = sentiments(yearly_df)
-        yr_d[yr] = (thisispryr, sent)
-        #ADDITIONALLY, FOR YEAR, REGARDLESS OF MODEL, GETTING SENTIMENTS.
 
+        #ADDITIONALLY, FOR YEAR, REGARDLESS OF MODEL, GETTING SENTIMENTS.
         csv_list = [yr]
         for i in thisispryr:
             csv_list.append(i[1])
@@ -200,26 +222,49 @@ def analyze_model(csv_file, comp_frame, level = 3, model = 3, clusters = 8,
                 csv_list.append(0)
 
         filewriter.writerow(csv_list)
-    return yr_d
+
+    return model_f
+
 
 def tfidf_km(plots, clusters, vocbs = None):
     '''
     We worked on process_text funciton, follow source for other parts of process.
     #add reference.
     '''
-    tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=5000,
-                                 min_df=0.2, use_idf=True,
+    #Changed min_df to have a more populated matrix
+    tfidf_v = TfidfVectorizer(max_df=0.8, max_features=5000,
+                                 min_df=0.05, use_idf=True,
                                  vocabulary = vocbs, tokenizer=process_text,
                                  ngram_range=(1,3))
+    tfidf_matrix = tfidf_v.fit_transform(plots)
 
-    tfidf_matrix = tfidf_vectorizer.fit_transform(plots)
-
+    #K means model
     dist = 1 - cosine_similarity(tfidf_matrix)
-
     km_model = KMeans(n_clusters=clusters)
     km_model.fit(tfidf_matrix)
+
     clusters = km_model.labels_.tolist()
+
+
     return clusters
+
+def tf_topwords(plots, ntopwords, n_components = 10, n_features = 50000):
+    '''
+    Need to cite in inputs documentatino and stack overflow.
+    Need to incorporate it somewhere, if words match feelings could be added
+    to
+    '''
+    print(plots)
+    tf_v = CountVectorizer(max_features=20000,
+                            analyzer = 'word', tokenizer = process_text)
+
+
+    tf_matrix = tf_v.fit_transform(plots)
+    featnames = tf_v.get_feature_names()
+    freqs = zip(featnames, tf_matrix.sum(axis=0))
+    top_words = sorted(freqs, key=lambda x: -x[1]) #stackoverflow
+
+    return  top_words
 
 #INCORPORATE TO ANALYZE MODEL
 def sentiments(yearly_df):
@@ -261,7 +306,7 @@ def process_text(text, stem = True, unique = True, nstopwords = True):
         tokens = [stemmer.stem(t) for t in tokens]
 
     clean_tokens = tokens[:]
-    stop_words = ["i", "me", "my", "myself", "we", "our,ours",
+    stop_words = ["i", "me", "my", "myself", "we", "our","ours",
                   "ourselves","you", "your", "yours", "yourself", "yourselves",
                   "he", "him", "his", "himself", "she", "her", "hers",
                   "herself", "it", "its", "itself", "they", "them", "their",
