@@ -12,8 +12,7 @@
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'popsents/css/emoji.css' %}" />
-
-  <title>emoji</title>
+  <title> {{compound.year}} </title>
 </head>
 
 
@@ -21,25 +20,28 @@
 
   <div class="wrapper">
 
-       <div class="row align-items-center">
-           <h1>{{compound}}</h1>
-       </div>
+        <h1> {{compound}} </h1>
+
 
         <section="emo-table">
             {{ table|safe }}
         </section>
 
         <section="media">
+            <h1>Greatest Hits</h1>
             {% if media %}
                 <ul>
                 {% for m in media %}
                     <li>{{ m }}</li>
                 {% endfor %}
                 </ul>
+            {% else %}
+                <p>Oh, no! This year was VOID of pop culture. #sad </p>
             {% endif %}
         </section>
 
         <section="events">
+            <h1>Some Notable Events</h1>
             {% if events %}
                 <ul>
                 {% for event in events %}

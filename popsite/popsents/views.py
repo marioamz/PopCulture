@@ -3,7 +3,8 @@ from django.template import loader
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import generic
-from random import randint
+
+import random
 
 from .models import Event, Media, TopSents, CompoundSents
 from .forms import YearForm, SentimentFinder
@@ -49,13 +50,13 @@ def find_sentiment(request):
 
 
 def emojis(input_year):
-    sents = TopSents.objects.filter(year=input_year)
+    sents = TopSents.objects.filter(year=input_year).order_by('-intensity')
     context = {}
     trows = ""
     for i, sent in enumerate(sents):
         num_emojis = int(sent.intensity // 10)
-        emoji_html = ' '.join([EMOJI_DICT[sent.emotion]] * (num_emojis + 1))
-        trows += "<tr><th scope='row'>{}</th><td>{}</td><td>{}%</td></tr>".format(sent.emotion, emoji_html, int(sent.intensity))
+        emoji_html = ' '.join([EMOJI_DICT[sent.emotion]] * (num_emojis*2 + 1))
+        trows += "<tr><th scope='row'>{}</th><td>{}</td><td>{}%</td></tr>".format(sent.emotion.capitalize(), emoji_html, int(sent.intensity))
     table = "<table class='table table-hover'><tbody>{}</tbody></table>".format(trows)
     context['table'] = table
     context['year'] = input_year
@@ -64,11 +65,7 @@ def emojis(input_year):
 
 def random_events_generator(input_year):
     events_set = Event.objects.filter(year=input_year)
-    random_events = []
-    for _ in range(3):
-        random_index = randint(0, len(events_set))
-        random_events.append(events_set[random_index])
-
+    random_events = random.sample(set(events_set),3)
     return random_events
 
 
@@ -77,16 +74,15 @@ def random_media_generator(input_year):
     random_media = []
     for m in media:
         media_set = Media.objects.filter(year=input_year, media_type=m)
-        print(media_set)
-        random_index = randint(0, len(media_set))
-        medium = media_set[random_index]
-        if m == "Book":
-            mstring = "We read {} by {}".format(medium.title, medium.author)
-        if m == "Movie":
-            mstring = "We packed the theaters for {}".format(medium.title)
-        if m == "Song":
-            mstring = "We rocked out to {} by {}".format(medium.title, medium.author)
-        random_media.append(mstring)
+        if len(media_set) > 0:
+            medium = random.sample(set(media_set),1)[0]
+            if m == "Book":
+                mstring = "We read {} by {}".format(medium.title, medium.author)
+            if m == "Movie":
+                mstring = "We packed the theaters for {}".format(medium.title)
+            if m == "Song":
+                mstring = "We rocked out to {} by {}".format(medium.title.title(), medium.author.title())
+            random_media.append(mstring)
     return random_media
 
 # currently not using
