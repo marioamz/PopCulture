@@ -36,10 +36,11 @@ def find_sentiment(request):
         template = 'popsents/sentiment_finder.html'
 
         context = emojis(y)
-        events_set = random_events_generator(y)
+        random_events, events_set = random_events_generator(y)
         media_set = random_media_generator(y)
         compound = CompoundSents.objects.filter(year=y)[0]
-        context['events'] = events_set
+        context['random_events'] = random_events
+        context['all_events'] = events_set
         context['media'] = media_set
         context['compound'] = compound
 
@@ -66,7 +67,7 @@ def emojis(input_year):
 def random_events_generator(input_year):
     events_set = Event.objects.filter(year=input_year)
     random_events = random.sample(set(events_set),3)
-    return random_events
+    return random_events, events_set
 
 
 def random_media_generator(input_year):

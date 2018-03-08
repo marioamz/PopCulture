@@ -42,9 +42,9 @@
 
         <section="events">
             <h1>Some Notable Events</h1>
-            {% if events %}
+            {% if random_events %}
                 <ul>
-                {% for event in events %}
+                {% for event in random_events %}
                     <li>{{event.text}}</li>
                 {% endfor %}
                 </ul>
