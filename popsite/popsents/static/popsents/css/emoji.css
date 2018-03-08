@@ -19,6 +19,7 @@ time, mark, audio, video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  margin-bottom: 20px;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -30,8 +31,10 @@ body {
 }
 ol, ul {
   list-style: square;
-  padding-left: 50px
+  padding-left: 50px;
+  margin-bottom: 20px;
 }
+
 blockquote, q {
   quotes: none;
 }
@@ -60,7 +63,8 @@ body {
 a { color: #1abc9c; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-p { margin-bottom: 20px; }
+p { margin-bottom: 20px;
+    font-size: 30px;}
 
 strong { font-weight: bold; }
 
@@ -121,10 +125,10 @@ footer {
 
 /* Section */
 section {
-  font-size: 24px;
+  font-size: 40px;
   line-height: 1.3em;
   margin: 0 auto;
-  padding-top: 80px;
+  padding-top: 100px;
 }
 
   section .yes { color: #0F0; }

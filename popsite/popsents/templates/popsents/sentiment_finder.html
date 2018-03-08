@@ -9,9 +9,10 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'popsents/css/emoji.css' %}" />
+  <link rel="shortcut icon" href="{% static 'popsents/images/sunglasses.png' %}" />
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   <title> {{compound.year}} </title>
 </head>
 
@@ -22,13 +23,12 @@
 
         <h1> {{compound}} </h1>
 
-
         <section="emo-table">
             {{ table|safe }}
         </section>
 
         <section="media">
-            <h1>Greatest Hits</h1>
+            <h1>The Greatest Hits</h1>
             {% if media %}
                 <ul>
                 {% for m in media %}
@@ -47,13 +47,15 @@
                 {% for event in random_events %}
                     <li>{{event.text}}</li>
                 {% endfor %}
+                    <a href="{% url 'popsents:year_detail' year%}"> See more events for {{ year }}</a>
                 </ul>
             {% else %}
                 <p>No events are available.</p>
             {% endif %}
         </section>
 
-        <div class="push"></div>
+        <div class="push">
+        <a href='{%  url 'popsents:years' %}' class="btn btn-lg btn-secondary"> Try another year </a></div>
   </div>
 
 

@@ -36,11 +36,10 @@ def find_sentiment(request):
         template = 'popsents/sentiment_finder.html'
 
         context = emojis(y)
-        random_events, events_set = random_events_generator(y)
+        random_events = random_events_generator(y)
         media_set = random_media_generator(y)
         compound = CompoundSents.objects.filter(year=y)[0]
         context['random_events'] = random_events
-        context['all_events'] = events_set
         context['media'] = media_set
         context['compound'] = compound
 
@@ -67,7 +66,7 @@ def emojis(input_year):
 def random_events_generator(input_year):
     events_set = Event.objects.filter(year=input_year)
     random_events = random.sample(set(events_set),3)
-    return random_events, events_set
+    return random_events
 
 
 def random_media_generator(input_year):
@@ -77,78 +76,21 @@ def random_media_generator(input_year):
         media_set = Media.objects.filter(year=input_year, media_type=m)
         if len(media_set) > 0:
             medium = random.sample(set(media_set),1)[0]
-            if m == "Book":
-                mstring = "We read {} by {}".format(medium.title, medium.author)
             if m == "Movie":
-                mstring = "We packed the theaters for {}".format(medium.title)
+                mstring = "We packed the theaters for {}.".format(medium.title)
             if m == "Song":
-                mstring = "We rocked out to {} by {}".format(medium.title.title(), medium.author.title())
+                mstring = "We rocked out to {} by {}.".format(medium.title.title(), medium.author.title())
+            if m == "Book":
+                mstring = "We read {} by {}.".format(medium.title, medium.author)
             random_media.append(mstring)
     return random_media
-
-# currently not using
-def select_year_and_type(request):
-    '''
-    Basic view where user selects year
-    Returns a result from the database
-    '''
-    if request.method == "POST":
-        print(request)
-        form = YearForm(request.POST)
-        year = form.data['year']
-        mt = form.data['media_type']
-        print(form)
-        return year_media_detail(request, year, mt)
-    else:
-        form = YearForm()
-
-    return render(request, 'popsents/years.html', {'form': form})
-
-
-def year_media_detail(request, input_year, input_type):
-    '''
-    '''
-    media_set = Media.objects.filter(year=input_year, media_type=input_type) # queryset
-    print(media_set)
-    template_name = 'popsents/year_media.html'
-    context = {'input_year': input_year,
-               'media_type': input_type,
-               'media_set': media_set}
-    return render(request, template_name, context)
-
-
-def years_list(request):
-    '''
-    Index of all years covered in project
-    '''
-    template_name = 'popsents/year_list.html'
-    years = (i for i in range(1945, 2019))
-    context = {'years': years}
-    return render(request, template_name, context)
 
 
 def year_detail(request, event_year):
     '''
     '''
-    events_set = Event.objects.filter(year=event_year) # queryset
+    events_set = Event.objects.filter(year=event_year)
     template_name = 'popsents/year_detail.html'
     context = {'event_year': event_year,
                'yearly_events': events_set}
     return render(request, template_name, context)
-
-
-# Very basic index view
-
-class IndexView(generic.ListView):
-    '''
-    '''
-    template_name = 'popsents/index.html'
-    context_object_name = 'random_events'
-
-    def get_queryset(self):
-        return Event.objects.order_by('id')[:100]
-        #return self.get_events_by_year()
-
-def detail(request, event_id):
-    event = get_object_or_404(Event, pk=event_id)
-    return render(request, 'popsents/detail.html', {'event': event})

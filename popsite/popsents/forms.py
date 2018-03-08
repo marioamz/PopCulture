@@ -2,11 +2,11 @@ from django import forms
 from .models import Media
 
 
-YEAR_RANGE = tuple([(i, i) for i in range(1945,2019)])
+YEAR_RANGE = tuple([(i, i) for i in range(1945,2018)])
 
 class YearForm(forms.Form):
     year = forms.ChoiceField(label='Pick a Year! ',
-                             choices=tuple([(i, i) for i in range(1945,2019)]),
+                             choices=YEAR_RANGE,
                              required=True)
 
     media_type = forms.ChoiceField(label="and medium of choice",
