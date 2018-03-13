@@ -89,7 +89,7 @@ This will wipe out the existing database connected to the website and repopulate
 ```
 cd popsite
 python3 manage.py shell
-from popsents.model import *
+from popsents.models import *
 construct_db()
 ```
 
