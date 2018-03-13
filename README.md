@@ -113,7 +113,7 @@ Please note this model does not cluster successfully, as the output does not var
 ```
 analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 2, 8, True, False, True, False)
 ```
-To run topic analysis, the last boolean parameter for the analyze_model command should be send to True. This will print out a message with the components of the topics on the terminal screen. Aditional parameters to change the defaults for number of words per topics and Vectorizing methods can be set as additional parameters as indicated in the inputs for the function on the .py file. 
+To run topic analysis, the last boolean parameter for the analyze_model command should be set to True. This will print out a message with the components of the topics on the terminal screen. Aditional parameters to change the defaults for number of words per topics and Vectorizing methods can be set as additional parameters as indicated in the header for the function on the .py file. 
 
 
 ## Authors
