@@ -43,7 +43,7 @@ result = create_file()
 
 #### Step 3: Get Emotions
 
-In iPython3, run our machine learning algorithm to determine frequencies of emotions for each year. This takes about three minutes.
+In iPython3, run our machine learning algorithm to determine frequencies of emotions for each year. This takes about three minutes. Downloading the nltk library takes about 10 minutes. 
 
 The output file will be called emotions.csv
 
@@ -65,7 +65,7 @@ None = number of clusters to be used (integer if model = 2)
 True = stemmed tokens
 False = keep unique tokens for a string
 True = remove stopwords
-False = topic analysis
+False = no topic analysis included
 ```
 
 #### Step 4: Get Events
@@ -109,10 +109,17 @@ analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 2, 8, True, Fal
 ```
 Please note this model does not cluster successfully, as the output does not vary much based on emotion.
 
+## Topic Analysis 
+```
+analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 2, 8, True, False, True, False)
+```
+To run topic analysis, the last boolean parameter for the analyze_model command should be send to True. This will print out a message with the components of the topics on the terminal screen. Aditional parameters to change the defaults for number of words per topics and Vectorizing methods can be set as additional parameters as indicated in the inputs for the function on the .py file. 
+
+
 ## Authors
 
 ``` 
-Cristina MacGregor -- worked on condensed_db and nltk_ml_final
+Cristina Mac Gregor -- worked on condensed_db and nltk_ml_final
 Mario Moreno -- worked on condensed_db and nltk_ml_final
 Hye Yeon Chang -- worked on popsite, wiki_data, visualizations
 ```
