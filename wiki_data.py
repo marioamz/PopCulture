@@ -67,5 +67,6 @@ def create_events_df(start, end):
 
     events_list = get_all_events(start, end)
     events_df = pd.DataFrame(events_list, columns=['Year', 'Month', 'Event'])
+    events_df.to_csv('final_events.csv')
 
     return events_df
