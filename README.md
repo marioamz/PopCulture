@@ -107,6 +107,7 @@ import nltk_ml
 run nltk_ml
 analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 2, 8, True, False, True, False)
 ```
+Please note this model does not cluster successfully, as the output does not vary much based on emotion.
 
 ## Authors
 
