@@ -71,9 +71,6 @@ h1 {
   text-transform: uppercase;
 }
 
-/* Sticky footer */
-html, body { height: 100%; }
-
 .wrapper {
   clear: both;
   min-height: 100%;
@@ -91,14 +88,14 @@ section {
 }
 
 /* Form */
-form input,
-form button {
+form input, form button {
   font-size: 22px;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   -ms-border-radius: 6px;
   -o-border-radius: 6px;
   border-radius: 6px;
+  margin: 10px;
 }
 
 form input {
@@ -113,9 +110,11 @@ form button {
   border: none;
   cursor: pointer;
 }
+
 form button:hover {
   background-color: #148f77;
 }
+
 
 /* Responsive */
 @media (max-width: 480px) {
