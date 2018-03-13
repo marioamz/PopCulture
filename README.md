@@ -44,7 +44,7 @@ result = create_file()
 
 #### Step 3: Get Emotions
 
-In iPython3, run our machine learning algorithm to determine frequencies of emotions for each year. This takes about three minutes. Downloading the nltk library takes about 10 minutes, but for the modules we'll be using we can just download, from the collections window, "popular packages" and from the All Packages tab "Vader_Lexicon".
+In iPython3, run our machine learning algorithm to determine frequencies of emotions for each year. This takes about three minutes. Downloading the nltk library takes about 10 minutes, but for the modules we'll be using we can just download, from the collections window, "popular packages" and from the All Packages tab "Vader_Lexicon". Running nltk.download() will open up a pop-up window from where the desired modules (Popular packages collection, and Vader_Lexicon) can be downloaded. 
 
 The output file will be called emotions.csv
 
