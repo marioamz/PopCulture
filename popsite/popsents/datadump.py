@@ -1,10 +1,8 @@
+# ORIGINAL
+# DATA DUMP INTO SQL
+
 from .models import *
 
-########################
-#                      #
-#  DATA DUMP INTO SQL  #
-#                      #
-########################
 
 EVENTS_FILENAME = '../final_events.csv'
 MEDIA_FILENAME = '../final_media_df.csv'
@@ -12,7 +10,9 @@ RESULTS_FILENAME = '../emotions.csv'
 
 def construct_db():
     '''
+    Wipes out DB, Creates and Saves New Data Points
     '''
+
     Media.objects.all().delete()
     Event.objects.all().delete()
     TopSents.objects.all().delete()
@@ -25,7 +25,9 @@ def construct_db():
 
 def create_event_table(filename):
     '''
+    Creates and Saves Event Objects in DB
     '''
+    
     df = pd.read_csv(filename, header=0,
                     names=['idx', 'year', 'month', 'event'],
                     index_col='idx')
@@ -38,7 +40,9 @@ def create_event_table(filename):
 
 def create_media_table(filename):
     '''
+    Creates and Saves Media Objects in DB
     '''
+
     df = pd.read_csv(filename, header=0)
     df.Year = df.Year.apply(int)
     for i, row in df.iterrows():
@@ -48,7 +52,9 @@ def create_media_table(filename):
 
 def create_sentiment_tables(filename):
     '''
+    Creates and Saves TopSents, CompSents Objects in DB
     '''
+
     df = pd.read_csv(filename)
     df.Year = df.Year.apply(int)
     FEELS = ["anticipation", "anger", "joy", "trust", "fear",

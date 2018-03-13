@@ -1,7 +1,7 @@
-from django.contrib import admin
+# ORIGINAL
 
-# Register your models here.
-from .models import Event, Media, TopSents, CompoundSents
+from django.contrib import admin
+from .models import *
 
 admin.site.register(Media)
 admin.site.register(Event)

@@ -1,3 +1,4 @@
+# DIRECT COPY
 """
 Django settings for popsite project.
 

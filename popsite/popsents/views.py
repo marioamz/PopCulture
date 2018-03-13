@@ -1,3 +1,5 @@
+# ORIGINAL
+
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import *
@@ -21,7 +23,7 @@ def home_page(request):
     Button links to Select Year View
     '''
 
-    template = 'popsents/project.html'
+    template = 'popsents/project_home.html'
 
     return render(request, template)
 
@@ -42,7 +44,11 @@ def find_sentiment(request):
     else:
         form = SentimentFinder()
 
-    return render(request, 'popsents/years.html', {'form': form})
+
+    template = 'popsents/years.html'
+    context = {'form': form}
+
+    return render(request, template, context)
 
 
 def year_detail(request, event_year):
@@ -52,7 +58,7 @@ def year_detail(request, event_year):
     '''
 
     events_set = Event.objects.filter(year=event_year)
-    template_name = 'popsents/year_detail.html'
+    template_name = 'popsents/event_archive.html'
     context = {'event_year': event_year,
                'yearly_events': events_set}
 

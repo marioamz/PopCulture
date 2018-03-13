@@ -1,3 +1,4 @@
+# DIRECT COPY
 """
 WSGI config for popsite project.
 
