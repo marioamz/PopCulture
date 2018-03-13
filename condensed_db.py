@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Source for songs: https://www.kaggle.com/rakannimer/billboard-lyrics
+# Source for movies: https://www.kaggle.com/rounakbanik/the-movies-dataset
+# Source for plots: http://www.cs.cmu.edu/~dbamman/booksummaries.html
+# Source for bestsellers: http://www.hawes.com/number1s.htm (by hand)
+
 
 import pandas as pd
 import jellyfish as jf
