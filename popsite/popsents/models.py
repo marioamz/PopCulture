@@ -2,13 +2,10 @@ from django.db import models
 from django.utils import timezone
 
 import datetime
-import csv
-import pandas as pd
-
 
 class Event(models.Model):
     '''
-    represents event table in sql db
+    Represents Event table in SQLite3 db
     '''
     year = models.CharField(max_length=4)
     month = models.CharField(max_length=30)
@@ -18,9 +15,10 @@ class Event(models.Model):
         event_string = "{} {}: {}".format(self.month, self.year, self.text[:100])
         return event_string
 
+
 class Media(models.Model):
     '''
-    represents media table in sql db
+    Represents Media table in SQLite3 db
     '''
     year = models.CharField(max_length=4)
     media_type = models.CharField(max_length=5, choices=(('book', "Book"),
@@ -35,6 +33,7 @@ class Media(models.Model):
 
 class TopSents(models.Model):
     '''
+    Represents Bag of Word Sentiments table in SQLite3 db
     '''
     year = models.CharField(max_length=4)
     emotion = models.CharField(max_length=20)
@@ -46,6 +45,7 @@ class TopSents(models.Model):
 
 class CompoundSents(models.Model):
     '''
+    Represents Vader Compoud Sentiment Score table in SQLite3 db
     '''
     year = models.CharField(max_length=4)
     compound = models.DecimalField(max_digits=8, decimal_places=3)

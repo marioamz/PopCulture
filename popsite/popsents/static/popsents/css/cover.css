@@ -1,6 +1,3 @@
-/* Heavily Inspired by Was My Car Towed App */
-/* Github:// smartchicago/wasmycartowed */
-
 /* Reset
    http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
@@ -55,7 +52,7 @@ body {
   font-family: 'Raleway', sans-serif;
   background: white;
   color: #333;
-  text-align: center;
+  text-align: left;
   line-height: 1.2em;
   padding: 0 20px;
   -webkit-font-smoothing: antialiased;
@@ -63,58 +60,58 @@ body {
 }
 
 h1 {
-  font-size: 48px;
+  font-size: 40px;
   line-height: 1em;
   font-weight: bold;
   margin-bottom: 20px;
-  margin-top: 200px;
+  margin-top: 20px;
   text-transform: uppercase;
 }
 
-/* Sticky footer */
-html, body { height: 100%; }
+p { margin-bottom: 20px;
+}
 
-.wrapper {
-  clear: both;
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin-bottom: -61px;
+a { color: #1abc9c; text-decoration: none;
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+ul { list-style: square;
+     font-size: 20px;
+     margin: 0px 0px 20px 20px;
+     line-height: 150%;
+     text-align: left;
+}
+
+table {
+    text-align: left;
+}
+
+strong {
+    font-weight: bold;
 }
 
 /* Section */
 section {
   font-size: 24px;
   line-height: 1.3em;
-  margin: 0 auto;
-  padding-top: 40px;
+  margin: 20px auto;
+  text-align: center;
 }
 
-/* Form */
-form input,
-form button {
-  font-size: 22px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  -ms-border-radius: 6px;
-  -o-border-radius: 6px;
-  border-radius: 6px;
+.masthead-brand, .nav-link, .nav-link-active {
+  margin-bottom: 0;
 }
 
-form input {
-  padding: 8px 0 9px 10px;
-  border: 1px solid #ccc;
+.cover-heading, .lead{
+  font-size: 24px;
+  line-height: 1em;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-form button {
-  background-color: #1abc9c;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-}
-form button:hover {
-  background-color: #148f77;
+.push {text-align: center;
 }
 
 /* Responsive */
@@ -124,3 +121,9 @@ form button:hover {
     min-height: 0;
     margin-bottom: 0;
   }
+  .wrapper, .push, { height: auto; }
+
+  section {
+    padding: 20px 0px 20px 0px;
+  }
+}

@@ -1,12 +1,14 @@
 from .models import *
 
 ########################
+#                      #
 #  DATA DUMP INTO SQL  #
+#                      #
 ########################
 
-EVENTS_FILENAME = '../all_events.csv'
-MEDIA_FILENAME = '../final_media_df_UPDT.csv'
-RESULTS_FILENAME = '../model_wordcounts_nonuniq.csv'
+EVENTS_FILENAME = '../final_events.csv'
+MEDIA_FILENAME = '../final_media_df.csv'
+RESULTS_FILENAME = '../emotions.csv'
 
 def construct_db():
     '''
@@ -31,6 +33,7 @@ def create_event_table(filename):
     for idx, row in df.iterrows():
         event = Event(year=row.year, month=row.month, text=row.event)
         event.save()
+    event.objects.filter(event='WWII:').delete()
 
 
 def create_media_table(filename):
@@ -39,7 +42,6 @@ def create_media_table(filename):
     df = pd.read_csv(filename, header=0)
     df.Year = df.Year.apply(int)
     for i, row in df.iterrows():
-        print(row.Year)
         media = Media(year=row.Year, media_type=row.Type, title=row.Title, author=row.Author)
         media.save()
 
@@ -49,13 +51,14 @@ def create_sentiment_tables(filename):
     '''
     df = pd.read_csv(filename)
     df.Year = df.Year.apply(int)
-    FEELS = ["anticipation", "anger", "joy", "trust", "fear", "surprise", "sadness", "disgust"]
+    FEELS = ["anticipation", "anger", "joy", "trust", "fear",
+             "surprise", "sadness", "disgust"]
 
     for i, row in df.iterrows():
         for f in FEELS:
             intense = "{} percentage".format(f)
             sent = TopSents(year=int(row.Year), emotion=f, intensity=row[intense])
             sent.save()
-        c = CompoundSents(year=int(row.Year), compound=row['compound'], positive=row.pos,
-                      neutral=row.neu, negative=row.neg)
+        c = CompoundSents(year=int(row.Year), compound=row['compound'],
+                          positive=row.pos, neutral=row.neu, negative=row.neg)
         c.save()
