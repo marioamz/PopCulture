@@ -23,7 +23,7 @@ pip3 install xlrd
 
 #### Step 1: Get Git
 
-Make sure to add the movies_metadata.csv file from dropbox and then pull all the necessary files into a new directory on your machine by running the following command.
+Make sure to add the movies_metadata.csv file from dropbox/google drive file and then pull all the necessary files into a new directory on your machine by running the following command. The movies_metadata.csv must be within the git repository. 
 
 ```
 git clone https://github.com/marioamz/PopCulture
