@@ -6,9 +6,9 @@ This project uses a basic machine learning word count model to analyze popular c
 
 These instructions will get you a copy of the project running on your local machine. 
 
-\textbf{Step-by-Step Instructions}
+### Step-by-Step Instructions
 
-\textit{Step 0: Get Installed}
+#### Step 0: Get Installed
 
 Make sure to install the following:
 
@@ -21,7 +21,7 @@ pip3 install wikipedia
 pip3 install xlrd
 ```
 
-\textit{Step 1: Get Git}
+#### Step 1: Get Git
 
 Make sure to add the movies_metadata.csv file from dropbox and then pull all the necessary files into a new directory on your machine by running the following command.
 
@@ -29,7 +29,7 @@ Make sure to add the movies_metadata.csv file from dropbox and then pull all the
 git clone https://github.com/marioamz/PopCulture
 ```
 
-\textit{Step 2: Get Data}
+#### Step 2: Get Data
  
 In iPython3, run the file called condensed_db to obtain a dataframe with books, songs, and movies. This takes about 15 seconds.
 
@@ -39,7 +39,7 @@ run condensed_db
 result = create_file()
 ```
 
-\textit{Step 3: Get Emotions}
+#### Step 3: Get Emotions
 
 In iPython3, run our machine learning algorithm to output a new CSV file that returns frequencies of emotions for each year. This takes about three minutes.
 
@@ -53,7 +53,7 @@ run nltk_ml
 analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 1, None, True, False, True)
 ```
 
-\textit{Step 4: Get Events}
+#### Step 4: Get Events
 
 Still in iPython3, pull events for the relevant years by running the following. This takes about three minutes.
 
@@ -65,7 +65,7 @@ run wiki_data
 create_events_df(1945, 2017)
 ```
 
-\textit{Step 5: Get a Website!}
+#### Step 5: Get a Website!
 
 On the command line, navigate to the popsite directory and run the following commands to create an instance of the website.
 
