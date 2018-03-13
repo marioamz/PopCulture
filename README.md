@@ -97,7 +97,8 @@ analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 2, 8, True, Fal
 
 ## Authors
 
+``` 
 Cristina MacGregor -- worked on condensed_db and nltk_ml_final
 Mario Moreno -- worked on condensed_db and nltk_ml_final
 Hye Yeon Chang -- worked on popsite, wiki_data, visualizations
-
+```
