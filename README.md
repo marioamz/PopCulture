@@ -83,13 +83,22 @@ create_events_df(1945, 2017)
 
 #### Step 5: Get a Website!
 
-On the command line, navigate to the popsite directory and run the following commands to create an instance of the website.
+On the command line, navigate to the popsite directory and run the following commands to create a fresh website. 
+This will wipe out the existing database connected to the website and repopulate it with the data generated above. 
 
 ```
 cd popsite
-python3 manage.py runserver
-***add /popsents to the end of the URL in the web browser***
+python3 manage.py shell
+from popsents.model import *
+construct_db()
 ```
+
+To view the website, run the following and visit: http://127.0.0.1:8000/popsents/
+
+```
+python3 manage.py runserver
+```
+
 
 ## Running Additional Models
 
