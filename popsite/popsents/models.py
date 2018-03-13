@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils import timezone
 
-import datetime
+import pandas as pd
 
 class Event(models.Model):
     '''
