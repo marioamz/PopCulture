@@ -124,30 +124,30 @@ def analyze_model(csv_file, comp_frame, level = 1, model = 1, clusters = 8,
     csvfile = open(csv_file, 'w')
     filewriter = csv.writer(csvfile, delimiter=",", quotechar=",")
     filewriter.writerow(COL_HEADERS)
-
     #Filter according to level
+    feels_d = get_feelings_dict()
+
     if level != 1:
         if level == 2:
             comp_frame = comp_frame[(comp_frame.Type== "Song")]
         elif level == 3:
             comp_frame = comp_frame[(comp_frame.Type!= "Song")]
 
-    #Update frame
+    #Complete frame with tokens per plot and cluster if specified.
     clean_f = updating_frame(comp_frame, clusters, model, stem, unique, nstopwords)
 
     if model == 2:
-        lst_freqs = get_stats_perclust(clusters, clean_f)
+        lst_freqs = get_stats_perclust(clusters, clean_f, feels_d)
 
     #Get yearly stats and print on csv.
     list_years = list(clean_f.Year.unique())
     yr_d = {}
 
     for yr in list_years:
-        print(yr)
         if model ==  1:
-            csv_list = compute_stats_list(clean_f, yr, model)
+            csv_list = compute_stats_list(clean_f, yr, model, feels_d)
         else:
-            csv_list = compute_stats_list(clean_f, yr, lst_freqs)
+            csv_list = compute_stats_list(clean_f, yr, model, feels_d, lst_freqs)
 
         filewriter.writerow(csv_list)
 
@@ -158,7 +158,51 @@ def analyze_model(csv_file, comp_frame, level = 1, model = 1, clusters = 8,
 
     return clean_f
 
-def compute_stats_list(frame, year, mdl, lst_freqs = None):
+
+def updating_frame(p_df, clusters, model = 1, stem = True, unique = True,
+                nstopwords = True):
+    '''
+    Cleans and updates the dataframe with new variables needed for the analysis (tokens, feelings-related tokens, cluster (if model = 2))
+
+    Inputs:
+        -p_df
+        -clusters: (int) number of clusters to be used if model 1 is specified
+        -model (int)
+        -stem: (boolean) True if we want stemmed tokens
+        -unique: (boolean) True if we want to keep unique tokens for a string.
+        -nstopwords: (boolean) True if we want to remove stopwords.
+
+    Ouptuts: Updated dataframe
+    '''
+    #Making sure there are no None values in plot data
+    p_clean = p_df[p_df.Plot !=  None]
+    p_clean = p_clean[p_clean.Plot !=  "None"]
+    p_clean = p_clean.dropna(axis = 0, how="any")
+    p_clean.reset_index(inplace= True)
+    plots = list(p_clean.Plot)
+
+
+    p_clean.loc[:, "Clean_tokens"] = ""
+    p_clean.loc[:, "Total_tokens"] = 0
+
+    for row in p_clean.iterrows():
+        if type(row[1].Plot) is str:
+            x = process_text(row[1].Plot, stem, unique, nstopwords)
+            p_clean.at[row[0], "Clean_tokens"] = x
+            p_clean.at[row[0], "Total_tokens"] = len(x)
+
+    #MODEL 2 CLUSTERS  #VECTORIZING USING ALL AVAILABLE INFORMATION
+
+    if model == 2:
+
+        p_clean.loc[:, "Clust"] = 0
+        clust_labs = tfidf_km(plots, clusters)
+        for inx, clust in enumerate(clust_labs):
+            p_clean.loc[inx, "Clust"] = clust
+
+    return p_clean
+
+def compute_stats_list(frame, year, mdl, d, lst_freqs = None):
     '''
     Creates a list with the statistics for a given year.
     Inputs:
@@ -170,9 +214,9 @@ def compute_stats_list(frame, year, mdl, lst_freqs = None):
     yearly_df = frame[(frame.Year== year)]
 
     if mdl == 1:
-        freq_pyear, sent_intensity = sentiment_statistics(yearly_df)
+        freq_pyear, sent_intensity = sentiment_statistics(yearly_df, d)
 
-    elif mdl == 2 :
+    elif mdl == 2:
         most_freq_cluster = yearly_df.Clust.mode().loc[0]
         most_freq_cluster = float(most_freq_cluster)
 
@@ -181,12 +225,12 @@ def compute_stats_list(frame, year, mdl, lst_freqs = None):
                 freq_pyear, sent_intensity = stats[1], stats[2]
                 break
 
-    #ADDITIONALLY, FOR YEAR, REGARDLESS OF MODEL, GETTING SENTIMENTS.
     csv_list = [year]
     for i in freq_pyear:
         csv_list.append(i[1])
         csv_list.append(i[2])
 
+    #ADDITIONALLY, FOR YEAR, REGARDLESS OF MODEL, GETTING SENTIMENTS.
     order = ('compound', 'pos', 'neu', 'neg')
 
     for val in order:
@@ -197,65 +241,16 @@ def compute_stats_list(frame, year, mdl, lst_freqs = None):
 
     return csv_list
 
-
-def updating_frame(p_df, clusters, model = 1, stem = True, unique = True,
-                nstopwords = True):
-    '''
-    Cleans and updates the dataframe with new variables needed for the analysis (tokens, feelings-related tokens, cluster (if model = 2))
-
-    Inputs:
-        -p_df
-        -clusters
-        -model
-        -stem
-        -unique
-        -nstopwords
-
-    Ouptuts: Updated dataframe:
-        - p_clean
-    '''
-    #Making sure there are no None values in plot data
-    p_clean = p_df[p_df.Plot !=  None]
-    p_clean = p_clean[p_df.Plot !=  "None"]
-    p_clean = p_clean.dropna(axis = 0, how="any")
-    p_clean.reset_index(inplace= True)
-    plots = list(p_clean.Plot)
-
-    p_clean.loc[:, "Clean_tokens"] = ""
-    p_clean.loc[:, "Total_tokens"] = 0
-    p_clean.loc[:, "Feelings_tokens"] = 0
-
-    feels_d = get_feelings_dict()
-    feels_ls = make_list(feels_d)
-
-    for row in p_clean.iterrows():
-        if type(row[1].Plot) is str:
-            x = process_text(row[1].Plot, stem, unique, nstopwords)
-            p_clean.at[row[0], "Clean_tokens"] = x
-            p_clean.at[row[0], "Total_tokens"] = len(x)
-
-            for k in x:
-                if k in feels_ls:
-                    p_clean.at[row[0], "Feelings_tokens"]+= 1
-
-    #MODEL 2 CLUSTERS  #VECTORIZING USING ALL AVAILABLE INFORMATION
-    if model == 2:
-        clust_labs = tfidf_km(plots, clusters)
-        for inx, clust in enumerate(clust_labs):
-            p_clean.loc[inx, "Clust"] = clust
-
-    return p_clean
-
-def get_stats_perclust(clusters, frame):
+def get_stats_perclust(clusters, frame, d):
     lst_freqs = []
     for i in range(clusters):
-        temp = clean_f[frame.Clust == i]
-        l, s = sentiment_statistics(temp)
+        temp = frame[frame.Clust == i]
+        l, s = sentiment_statistics(temp, d)
         lst_freqs.append((i, l, s))
 
     return lst_freqs
 
-def sentiment_statistics(modeled_frame):
+def sentiment_statistics(modeled_frame, d):
     '''
     Gets frequencies for each of the eight main feelings, considering all the observations in a given dataframe.
 
@@ -266,7 +261,7 @@ def sentiment_statistics(modeled_frame):
                     item 1: number of counts for tokens related to given feeling.
                     item 2: percentage of words assigned to the feeling,    related to those assigned to other feelings.
     '''
-    feels_d = get_feelings_dict()
+
     tot = 0
     feeling = 0
     sent_dict = None
@@ -280,9 +275,8 @@ def sentiment_statistics(modeled_frame):
 
             #Update feelings frequencies
             for i in row[1].Clean_tokens:
-                if i in feels_d[FEELING[0]]:
+                if i in d[FEELING[0]]:
                     FEELING[1] += 1
-                    modeled_frame.at[row[0], "Feelings_tokens"]+= 1
 
             #Sentiment polarity: Only created in first loop
             if not sent_dict:
@@ -346,7 +340,6 @@ def tfidf_km(plots, clusters, vocbs = None):
     tfidf_matrix = tfidf_v.fit_transform(plots)
 
     #K means model
-    dist = 1 - cosine_similarity(tfidf_matrix)
     km_model = KMeans(n_clusters=clusters)
     km_model.fit(tfidf_matrix)
 

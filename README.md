@@ -1,6 +1,6 @@
 # PopCulture
 
-This project uses a basic machine learning word count model to analyze popular culture in order to gauge sentiment over the last 50 years.
+This project uses a basic machine learning bag of words model to do sentiment analysis on best-selling books, movies, and songs in order to gauge sentiment over the last 70 years.
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ git clone https://github.com/marioamz/PopCulture
 
 #### Step 2: Get Data
  
-In iPython3, run the file called condensed_db to obtain a dataframe with books, songs, and movies. This takes about 15 seconds.
+In iPython3, run the file called condensed_db to process the books, songs, and movies data. This takes about 15 seconds.
 
 The output file will be called final_media_df.csv
 
@@ -43,7 +43,7 @@ result = create_file()
 
 #### Step 3: Get Emotions
 
-In iPython3, run our machine learning algorithm to output a new CSV file that returns frequencies of emotions for each year. This takes about three minutes.
+In iPython3, run our machine learning algorithm to determine frequencies of emotions for each year. This takes about three minutes.
 
 The output file will be called emotions.csv
 
@@ -53,6 +53,19 @@ nltk.download()
 import nltk_ml_final
 run nltk_ml_final
 analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 1, None, True, False, True, False)
+```
+Here's what those inputs mean:
+
+```
+"emotions.csv" = csv file being created
+result = dataframe being used as a comparison in the model
+1 = level of analysis (1 for all content, 2 just for songs, 3 just for movies and books)
+1 = model running (1 for bag of words, 2 for clustering)
+None = number of clusters to be used (integer if model = 2)
+True = stemmed tokens
+False = keep unique tokens for a string
+True = remove stopwords
+False = topic analysis
 ```
 
 #### Step 4: Get Events
@@ -74,7 +87,7 @@ On the command line, navigate to the popsite directory and run the following com
 ```
 cd popsite
 python3 manage.py runserver
-add /popsents to the end of the URL
+***add /popsents to the end of the URL in the web browser***
 ```
 
 ## Running Additional Models
@@ -94,6 +107,7 @@ import nltk_ml
 run nltk_ml
 analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 2, 8, True, False, True, False)
 ```
+Please note this model does not cluster successfully, as the output does not vary much based on emotion.
 
 ## Authors
 
