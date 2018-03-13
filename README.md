@@ -33,6 +33,8 @@ git clone https://github.com/marioamz/PopCulture
  
 In iPython3, run the file called condensed_db to obtain a dataframe with books, songs, and movies. This takes about 15 seconds.
 
+The output file will be called final_media_df.csv
+
 ```
 import condensed_db
 run condensed_db
@@ -48,8 +50,8 @@ The output file will be called emotions.csv
 ```
 import nltk
 nltk.download()
-import nltk_ml
-run nltk_ml
+import nltk_ml_final
+run nltk_ml_final
 analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 1, None, True, False, True, False)
 ```
 
@@ -75,5 +77,27 @@ python3 manage.py runserver
 add /popsents to the end of the URL
 ```
 
+## Running Additional Models
 
+The primary model is a bag of words that counts frequently occurring emotions in the summaries of top grossing movies, lyrics from songs in the Billboard Top 100, and abstracts from best-selling books for any given year.
+
+We also developed an additional model: an unsupervised clustering model that attempted to cluster songs based on similarities that could be associated with emotions.
+
+### Clustering model
+
+To run this alternative model, follow these commands in place of Step 3 above.
+
+```
+import nltk
+nltk.download()
+import nltk_ml
+run nltk_ml
+analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 2, 8, True, False, True, False)
+```
+
+## Authors
+
+Cristina MacGregor -- worked on condensed_db and nltk_ml_final
+Mario Moreno -- worked on condensed_db and nltk_ml_final
+Hye Yeon Chang -- worked on popsite, wiki_data, visualizations
 
