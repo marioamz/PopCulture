@@ -50,7 +50,7 @@ import nltk
 nltk.download()
 import nltk_ml
 run nltk_ml
-analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 1, None, True, False, True)
+analyze_total_nonuniq = analyze_model("emotions.csv", result, 1, 1, None, True, False, True, False)
 ```
 
 #### Step 4: Get Events
