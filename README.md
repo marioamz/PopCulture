@@ -84,7 +84,7 @@ create_events_df(1945, 2017)
 #### Step 5: Get a Website!
 
 On the command line, navigate to the popsite directory and run the following commands to create a fresh website. 
-This will wipe out the existing database connected to the website and repopulate it with the data generated above. 
+This will wipe out the existing database connected to the website and repopulate it with the data generated above. This process takes approximately 2.5 minutes.
 
 ```
 cd popsite
@@ -93,7 +93,7 @@ from popsents.models import *
 construct_db()
 ```
 
-To view the website, run the following and visit: http://127.0.0.1:8000/popsents/
+To view the website, exit iPython, run the following, and visit: http://127.0.0.1:8000/popsents/
 
 ```
 python3 manage.py runserver
