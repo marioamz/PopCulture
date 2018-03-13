@@ -1,5 +1,5 @@
 # coding: utf-8
-# Hye Yeon Chang
+# Original
 # Aggregating Major Events by Year Using Wikipedia Data
 # Uses the [Wikipedia](https://github.com/goldsmith/Wikipedia) python wrapper by Jonathan Goldsmith
 
@@ -51,7 +51,6 @@ def get_all_events(start, end):
 
     all_events = []
     for i in range(start, end + 1):
-        print(i)
         year = str(i)
         all_events += get_year_month_events(year)
     return all_events

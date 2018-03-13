@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf8">
+    <meta name="description" content="Analyzing pop culture sentiment over that past decades">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'popsents/css/general.css' %}" />
+    <link rel="shortcut icon" href="{% static 'popsents/images/sunglasses.png' %}" />
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+    <title> {{compound.year}} </title>
+</head>
+
+
+<body>
+    <div class="wrapper">
+
+        <section id="sentiment">
+            <h1> {{compound}} </h1>
+            {{ table|safe }}
+        </section>
+
+        <section id="media">
+            <h1>The Greatest Hits</h1>
+            {% if media %}
+                <ul>
+                {% for m in media %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>Oh, no! This year was VOID of pop culture. #sad </p>
+            {% endif %}
+        </section>
+
+        <section id="events">
+            <h1>Some Notable Events</h1>
+            {% if random_events %}
+                <ul>
+                {% for event in random_events %}
+                    <li>{{event.text}}</li>
+                {% endfor %}
+                    <a href="{% url 'popsents:year_detail' year%}"> See more events for {{ year }}</a>
+                </ul>
+            {% else %}
+                <p>No events are available.</p>
+            {% endif %}
+        </section>
+
+        <div class="push">
+            <a href='{%  url 'popsents:years' %}' class="btn btn-lg btn-secondary"> Try another year </a>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+</body>
