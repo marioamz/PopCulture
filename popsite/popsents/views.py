@@ -50,6 +50,8 @@ def find_sentiment(request):
 
 
 def emojis(input_year):
+    '''
+    '''
     sents = TopSents.objects.filter(year=input_year).order_by('-intensity')
     context = {}
     trows = ""
